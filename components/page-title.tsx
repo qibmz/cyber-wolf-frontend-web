@@ -6,6 +6,8 @@ import { useEffect } from "react"
 // 页面路径 -> 标题（站点名后缀由组件自动拼接）
 const PAGE_TITLES: Record<string, string> = {
   "/login": "登录",
+  "/markets": "行情",
+  "/news": "资讯",
 }
 
 /**

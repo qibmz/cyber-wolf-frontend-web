@@ -82,6 +82,8 @@
     --sidebar-ring: oklch(0.708 0 0);
 }
 
+/* 暗色为主题默认值（同时作用于 :root 和 .dark，固定暗色模式） */
+:root,
 .dark {
     --background: oklch(0.145 0 0);
     --foreground: oklch(0.985 0 0);

@@ -1,14 +1,14 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
+import { memo } from "react"
 
 import { cn } from "@/lib/utils"
 
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME ?? "Cyber Wolf"
 
-/**
- * 品牌 Logo：狼头图标 + 站点名，点击跳转首页
- */
-export function BrandLogo({ className }: { className?: string }) {
+function BrandLogoComponent({ className }: { className?: string }) {
   return (
     <Link
       href="/"
@@ -25,3 +25,10 @@ export function BrandLogo({ className }: { className?: string }) {
     </Link>
   )
 }
+
+/**
+ * 品牌 Logo：狼头图标 + 站点名，点击跳转首页。
+ * memo 化：未来放入有状态的 Client 容器（如导航栏）时，
+ * 父组件重渲染不会连带重渲染本组件。
+ */
+export const BrandLogo = memo(BrandLogoComponent)

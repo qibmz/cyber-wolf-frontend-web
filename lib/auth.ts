@@ -1,4 +1,5 @@
 import axios from "axios"
+import type { User } from "@/api/endpoints"
 
 const TOKEN_KEY = "token"
 const REFRESH_TOKEN_KEY = "refreshToken"
@@ -8,7 +9,7 @@ export interface AuthTokens {
   token: string
   refreshToken: string
   tokenExpires: number
-  user: unknown
+  user: User
 }
 
 export function saveAuthTokens(data: AuthTokens) {
@@ -18,7 +19,18 @@ export function saveAuthTokens(data: AuthTokens) {
 }
 
 export function getToken(): string | null {
+  if (typeof window === "undefined") return null
   return localStorage.getItem(TOKEN_KEY)
+}
+
+export function getUser(): User | null {
+  if (typeof window === "undefined") return null
+  try {
+    const raw = localStorage.getItem(USER_KEY)
+    return raw ? (JSON.parse(raw) as User) : null
+  } catch {
+    return null
+  }
 }
 
 export function clearAuth() {

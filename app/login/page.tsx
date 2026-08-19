@@ -1,9 +1,8 @@
 import type { Metadata } from "next"
 import Image from "next/image"
 
+import { BrandLogo } from "@/components/brand-logo"
 import { LoginForm } from "@/components/login-form"
-
-const siteName = process.env.NEXT_PUBLIC_SITE_NAME ?? "Cyber Wolf"
 
 export async function generateMetadata(): Promise<Metadata> {
   return { title: "登录" }
@@ -14,16 +13,7 @@ export default function LoginPage() {
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
-          <a href="#" className="flex items-center gap-2 font-medium">
-            <Image
-              src="/images/logo-head.webp"
-              alt={siteName}
-              width={474}
-              height={568}
-              className="h-8 w-auto"
-            />
-            {siteName}
-          </a>
+          <BrandLogo />
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
@@ -31,13 +21,14 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-      <div className="relative hidden bg-muted lg:block">
+      <div className="relative hidden items-center justify-center bg-background lg:flex">
         <Image
-          src="/images/placeholder.svg"
+          src="/images/login/login-illustration.webp"
           alt="登录页配图"
-          fill
-          sizes="50vw"
-          className="object-cover dark:brightness-[0.2] dark:grayscale"
+          width={1024}
+          height={1280}
+          className="h-[80%] w-auto object-cover dark:brightness-[0.55] dark:grayscale"
+          priority
         />
       </div>
     </div>

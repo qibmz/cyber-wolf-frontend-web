@@ -1,8 +1,22 @@
+import type { Metadata } from "next"
 import { Geist_Mono, Inter } from "next/font/google"
 
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
+import { PageTitle } from "@/components/page-title"
+import { Providers } from "@/components/providers"
 import { cn } from "@/lib/utils"
+
+const siteName = process.env.NEXT_PUBLIC_SITE_NAME ?? "Cyber Wolf"
+const siteDescription =
+  process.env.NEXT_PUBLIC_SITE_DESCRIPTION ?? "Cyber Wolf 官方 Web 应用"
+
+export const metadata: Metadata = {
+  title: {
+    default: siteName,
+    template: `%s | ${siteName}`,
+  },
+  description: siteDescription,
+}
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
@@ -18,9 +32,10 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="zh-CN"
       suppressHydrationWarning
       className={cn(
+        "dark",
         "antialiased",
         fontMono.variable,
         "font-sans",
@@ -28,7 +43,10 @@ export default function RootLayout({
       )}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <Providers>
+          <PageTitle />
+          {children}
+        </Providers>
       </body>
     </html>
   )

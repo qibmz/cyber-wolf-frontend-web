@@ -1,8 +1,13 @@
-"use client"
-
+import type { Metadata } from "next"
 import Image from "next/image"
 
 import { LoginForm } from "@/components/login-form"
+
+const siteName = process.env.NEXT_PUBLIC_SITE_NAME ?? "Cyber Wolf"
+
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: "登录" }
+}
 
 export default function LoginPage() {
   return (
@@ -12,12 +17,12 @@ export default function LoginPage() {
           <a href="#" className="flex items-center gap-2 font-medium">
             <Image
               src="/images/logo-head.webp"
-              alt="Cyber Wolf"
+              alt={siteName}
               width={474}
               height={568}
               className="h-8 w-auto"
             />
-            Cyber Wolf
+            {siteName}
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">

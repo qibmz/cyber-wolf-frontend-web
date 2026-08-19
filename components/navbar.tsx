@@ -21,6 +21,7 @@ import { useAuth } from "@/hooks/use-auth"
 import { cn } from "@/lib/utils"
 
 const NAV_ITEMS = [
+  { label: "首页", href: "/" },
   { label: "行情", href: "/markets" },
   { label: "资讯", href: "/news" },
 ]

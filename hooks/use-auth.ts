@@ -1,27 +1,38 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 
-import type { User } from "@/api/endpoints"
-import { getUser } from "@/lib/auth"
+import { authControllerMeV1 } from "@/api/endpoints"
+import { clearAuth, getToken } from "@/lib/auth"
+import { useAuthStore } from "@/stores/auth-store"
 
 /**
  * 读取当前登录用户。
- * 挂载时读取 localStorage，并监听 storage 事件（多标签页同步）。
- * 登录/退出后通常伴随路由跳转或刷新，组件会重新挂载读取最新状态。
+ *
+ * 用户信息只存于全局内存状态（zustand），不持久化：
+ * - 登录成功后由登录响应写入
+ * - 刷新页面时若存在 token，则调用 /auth/me 恢复用户信息
+ * - 无 token 或请求失败则视为未登录
  */
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(() => getUser())
+  const user = useAuthStore((s) => s.user)
+  const setUser = useAuthStore((s) => s.setUser)
 
   useEffect(() => {
-    function handleStorage(event: StorageEvent) {
-      if (event.key === "user") {
-        setUser(getUser())
-      }
-    }
-    window.addEventListener("storage", handleStorage)
-    return () => window.removeEventListener("storage", handleStorage)
-  }, [])
+    if (!getToken() || useAuthStore.getState().user) return
+
+    // 延迟到挂载后执行，保证 SSR/首帧一致
+    const timer = setTimeout(() => {
+      authControllerMeV1()
+        .then((res) => setUser(res.data))
+        .catch(() => {
+          // token 失效则清除登录态
+          clearAuth()
+        })
+    }, 0)
+
+    return () => clearTimeout(timer)
+  }, [setUser])
 
   return { user, isAuthenticated: user !== null }
 }

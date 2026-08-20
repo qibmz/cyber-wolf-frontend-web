@@ -18,6 +18,7 @@ import { saveAuthTokens } from "@/lib/auth"
 import { getApiErrorMessage } from "@/lib/api-errors"
 import { cn } from "@/lib/utils"
 import { loginSchema } from "@/lib/validations"
+import { useAuthStore } from "@/stores/auth-store"
 
 type FieldErrors = { email?: string; password?: string }
 
@@ -33,6 +34,8 @@ export function LoginForm({
     mutation: {
       onSuccess: (response) => {
         saveAuthTokens(response.data)
+        // 用户信息写入全局状态（不落地 localStorage）
+        useAuthStore.getState().setUser(response.data.user)
         router.push("/")
       },
       onError: (err) => {

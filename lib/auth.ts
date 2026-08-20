@@ -1,21 +1,19 @@
 import axios from "axios"
-import type { User } from "@/api/endpoints"
 
 const TOKEN_KEY = "token"
 const REFRESH_TOKEN_KEY = "refreshToken"
-const USER_KEY = "user"
 
 export interface AuthTokens {
   token: string
   refreshToken: string
   tokenExpires: number
-  user: User
+  user?: unknown
 }
 
 export function saveAuthTokens(data: AuthTokens) {
+  // 仅持久化 token 三件套；用户信息由全局状态维护，不落地
   localStorage.setItem(TOKEN_KEY, data.token)
   localStorage.setItem(REFRESH_TOKEN_KEY, data.refreshToken)
-  localStorage.setItem(USER_KEY, JSON.stringify(data.user))
 }
 
 export function getToken(): string | null {
@@ -23,26 +21,16 @@ export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY)
 }
 
-export function getUser(): User | null {
-  if (typeof window === "undefined") return null
-  try {
-    const raw = localStorage.getItem(USER_KEY)
-    return raw ? (JSON.parse(raw) as User) : null
-  } catch {
-    return null
-  }
-}
-
 export function clearAuth() {
   localStorage.removeItem(TOKEN_KEY)
   localStorage.removeItem(REFRESH_TOKEN_KEY)
-  localStorage.removeItem(USER_KEY)
 }
 
 // 全局 axios 拦截器（客户端注册一次）：
 // 1. 所有请求自动附带 Bearer token
 // 2. 请求头声明语言（后端 nestjs-i18n 按此返回对应语言，简体中文 = zh）
-// 3. 401 时清除登录态并跳转登录页
+// 3. 统一解包后端响应包装 { code, msg, data }，业务侧拿到原始 data
+// 4. 401 时静默清除登录态（不强制跳转，由 UI 呈现未登录状态）
 if (typeof window !== "undefined") {
   axios.interceptors.request.use((config) => {
     config.headers["x-custom-lang"] = "zh"
@@ -54,16 +42,25 @@ if (typeof window !== "undefined") {
   })
 
   axios.interceptors.response.use(
-    (response) => response,
+    (response) => {
+      const body = response.data
+      // 后端统一包装格式 { code, msg, data }，成功时解包出 data；
+      // 204 空响应 / 文件流(Blob) 不处理
+      if (
+        body &&
+        typeof body === "object" &&
+        !(body instanceof Blob) &&
+        body.code === 200 &&
+        "data" in body
+      ) {
+        response.data = body.data
+      }
+      return response
+    },
     (error) => {
+      // 401：静默清除登录态，不跳转（避免进入页面就被踢到登录页）
       if (error.response?.status === 401) {
         clearAuth()
-        if (
-          typeof window !== "undefined" &&
-          !window.location.pathname.startsWith("/login")
-        ) {
-          window.location.href = "/login"
-        }
       }
       return Promise.reject(error)
     }

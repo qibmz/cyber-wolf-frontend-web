@@ -21,17 +21,12 @@ export function useAuth() {
   useEffect(() => {
     if (!getToken() || useAuthStore.getState().user) return
 
-    // 延迟到挂载后执行，保证 SSR/首帧一致
-    const timer = setTimeout(() => {
-      authControllerMeV1()
-        .then((res) => setUser(res.data))
-        .catch(() => {
-          // token 失效则清除登录态
-          clearAuth()
-        })
-    }, 0)
-
-    return () => clearTimeout(timer)
+    authControllerMeV1()
+      .then((res) => setUser(res.data))
+      .catch(() => {
+        // token 失效则清除登录态
+        clearAuth()
+      })
   }, [setUser])
 
   return { user, isAuthenticated: user !== null }

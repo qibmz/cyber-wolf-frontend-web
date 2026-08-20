@@ -2,9 +2,9 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Loader2, Lock, Mail } from "lucide-react"
+import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react"
 
-import { useAuthControllerLoginV1 } from "@/api/endpoints"
+import { useAuthControllerLoginV1 } from "@/api/endpoints/auth"
 import { Button } from "@/components/ui/button"
 import {
   Field,
@@ -29,6 +29,7 @@ export function LoginForm({
   const router = useRouter()
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [error, setError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
 
   const login = useAuthControllerLoginV1({
     mutation: {
@@ -110,13 +111,26 @@ export function LoginForm({
             <Input
               id="password"
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="请输入密码"
-              className="pl-9"
+              className="pr-10 pl-9"
               required
               autoComplete="current-password"
               aria-invalid={!!fieldErrors.password}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? "隐藏密码" : "显示密码"}
+              aria-pressed={showPassword}
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {showPassword ? (
+                <EyeOff className="size-4" />
+              ) : (
+                <Eye className="size-4" />
+              )}
+            </button>
           </div>
           <FieldError>{fieldErrors.password}</FieldError>
         </Field>

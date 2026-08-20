@@ -3,7 +3,7 @@ import { HeroSection } from "@/components/home/hero-section"
 import { ParallaxSection } from "@/components/home/parallax-section"
 import { PixelTrailSection } from "@/components/home/pixel-trail-section"
 import { StatsSection } from "@/components/home/stats-section"
-import { TargetCursor } from "@/components/target-cursor"
+import { TargetCursor } from "@/components/home/target-cursor"
 
 export default function Page() {
   return (

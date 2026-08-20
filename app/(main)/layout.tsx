@@ -1,8 +1,9 @@
 import { ViewTransition } from "react"
 
-import { Footer } from "@/components/footer"
+import { Footer } from "@/components/layout/footer"
+import { Navbar } from "@/components/layout/navbar"
+import { ScrollToTop } from "@/components/layout/scroll-to-top"
 import { LenisProvider } from "@/components/lenis-provider"
-import { Navbar } from "@/components/navbar"
 
 /**
  * 主站布局（route group: (main)）：
@@ -25,6 +26,7 @@ export default function MainLayout({
           </ViewTransition>
         </main>
         <Footer />
+        <ScrollToTop />
       </div>
     </LenisProvider>
   )

@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { ArrowDownRight, ArrowUpRight } from "lucide-react"
 
-import { Container } from "@/components/container"
+import { Container } from "@/components/layout/container"
 import { cn } from "@/lib/utils"
 
 export const metadata: Metadata = { title: "行情" }

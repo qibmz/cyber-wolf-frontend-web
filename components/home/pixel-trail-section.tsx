@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 
-import { PixelTrail } from "@/components/pixel-trail"
+import { PixelTrail } from "@/components/home/pixel-trail"
 
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME ?? "Cyber Wolf"
 

@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 import Image from "next/image"
 
-import { BrandLogo } from "@/components/brand-logo"
-import { LoginForm } from "@/components/login-form"
+import { LoginForm } from "@/components/auth/login-form"
+import { BrandLogo } from "@/components/layout/brand-logo"
 
 export async function generateMetadata(): Promise<Metadata> {
   return { title: "登录" }

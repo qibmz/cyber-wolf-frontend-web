@@ -5,8 +5,8 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Menu } from "lucide-react"
 
-import { BrandLogo } from "@/components/brand-logo"
-import { Container } from "@/components/container"
+import { BrandLogo } from "@/components/layout/brand-logo"
+import { Container } from "@/components/layout/container"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {

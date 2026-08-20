@@ -9,9 +9,9 @@ export default defineConfig({
       target: apiUrl,
     },
     output: {
-      target: "./src/api/endpoints.ts",
+      target: "./src/api/endpoints",
       client: "react-query",
-      mode: "single",
+      mode: "tags",
       httpClient: "axios",
     },
   },

@@ -2,7 +2,7 @@
 
 import { create } from "zustand"
 
-import type { User } from "@/api/endpoints"
+import type { User } from "@/api/endpoints/api.schemas"
 
 interface AuthStore {
   /** 当前登录用户（仅内存维护，不持久化） */

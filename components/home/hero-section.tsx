@@ -5,7 +5,7 @@ import { useRef } from "react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 
-import { Lightfall } from "@/components/lightfall"
+import { Lightfall } from "@/components/home/lightfall"
 import { Button } from "@/components/ui/button"
 
 const TITLE_1 = "开启数字资产的"

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react"
 
-import { authControllerMeV1 } from "@/api/endpoints"
+import { authControllerMeV1 } from "@/api/endpoints/auth"
 import { clearAuth, getToken } from "@/lib/auth"
 import { useAuthStore } from "@/stores/auth-store"
 

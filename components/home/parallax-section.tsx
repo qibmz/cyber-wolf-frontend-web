@@ -2,7 +2,7 @@
 
 import { CandlestickChart, Newspaper, ShieldCheck } from "lucide-react"
 
-import { ScrollStack, ScrollStackItem } from "@/components/scroll-stack"
+import { ScrollStack, ScrollStackItem } from "@/components/home/scroll-stack"
 
 const FEATURES = [
   {

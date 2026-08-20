@@ -1,4 +1,4 @@
-import { DriftWall } from "@/components/drift-wall"
+import { DriftWall } from "@/components/home/drift-wall"
 
 /**
  * DriftWall 流动图片墙区块（远程示例图片）。

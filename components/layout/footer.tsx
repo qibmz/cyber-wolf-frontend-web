@@ -1,7 +1,7 @@
 import Link from "next/link"
 
-import { BrandLogo } from "@/components/brand-logo"
-import { Container } from "@/components/container"
+import { BrandLogo } from "@/components/layout/brand-logo"
+import { Container } from "@/components/layout/container"
 
 const FOOTER_LINKS = [
   { label: "行情", href: "/markets" },

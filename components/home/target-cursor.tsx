@@ -451,9 +451,8 @@ const TargetCursor: React.FC<TargetCursorProps> = ({
     }
   }, [spinDuration, isMobile])
 
-  if (isMobile) {
-    return null
-  }
+  // 注意：不做 isMobile 渲染分支（SSR 无 window 判断不一致会导致 hydration 报错）。
+  // 移动端的显隐由外层 CSS(hidden md:block) 控制；isMobile 仅用于跳过动画初始化。
 
   return (
     <div ref={cursorRef} className="target-cursor-wrapper">

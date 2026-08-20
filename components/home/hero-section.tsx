@@ -1,29 +1,53 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import Link from "next/link"
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 
-import { Lightfall } from "@/components/home/lightfall"
 import { Button } from "@/components/ui/button"
+
+const Lightfall = dynamic(
+  () =>
+    import("@/components/home/lightfall").then((m) => ({
+      default: m.Lightfall,
+    })),
+  { ssr: false }
+)
 
 const TITLE_1 = "开启数字资产的"
 const TITLE_2 = "智慧之旅"
 
 /**
  * Hero 区块：
- * - Aurora 极光背景（CSS 动画）
+ * - 先 CSS 壳保证 LCP，空闲后再挂 WebGL Lightfall（移动端仅 CSS）
  * - 标题逐字符上浮入场（GSAP）
  * - 磁吸按钮（鼠标跟随）
  */
 export function HeroSection() {
   const scope = useRef<HTMLDivElement>(null)
   const ctaRef = useRef<HTMLDivElement>(null)
+  const [showLightfall, setShowLightfall] = useState(false)
+
+  useEffect(() => {
+    // 移动端 / 粗指针：跳过 WebGL，只保留 CSS 氛围底
+    const canWebGL = window.matchMedia(
+      "(min-width: 768px) and (pointer: fine)"
+    ).matches
+    if (!canWebGL) return
+
+    const enable = () => setShowLightfall(true)
+    if (typeof window.requestIdleCallback === "function") {
+      const id = window.requestIdleCallback(enable, { timeout: 1200 })
+      return () => window.cancelIdleCallback(id)
+    }
+    const t = window.setTimeout(enable, 200)
+    return () => window.clearTimeout(t)
+  }, [])
 
   useGSAP(
     () => {
-      // 标题字符逐个入场
       gsap.from(".hero-char", {
         y: 60,
         opacity: 0,
@@ -34,7 +58,6 @@ export function HeroSection() {
         delay: 0.2,
       })
 
-      // 副标题/按钮渐入
       gsap.from(".hero-fade", {
         y: 30,
         opacity: 0,
@@ -80,32 +103,33 @@ export function HeroSection() {
       ref={scope}
       className="relative flex min-h-[85svh] items-center justify-center overflow-hidden"
     >
-      {/* WebGL Lightfall 光雨背景（蓝紫色系，与绿色文字互补） */}
+      {/* CSS 壳：立即可见；桌面空闲后再叠 WebGL */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-80"
+        className="pointer-events-none absolute inset-0 bg-[#080d1a] opacity-80"
         aria-hidden
       >
-        <Lightfall
-          colors={["#818cf8", "#a78bfa", "#38bdf8"]}
-          backgroundColor="#080d1a"
-          speed={0.7}
-          streakCount={4}
-          streakWidth={1.2}
-          streakLength={1.3}
-          glow={1}
-          density={0.7}
-          zoom={3}
-          backgroundGlow={0.35}
-          opacity={0.85}
-        />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_20%,rgba(129,140,248,0.35),transparent_55%),radial-gradient(ellipse_60%_50%_at_80%_60%,rgba(167,139,250,0.25),transparent_50%),radial-gradient(ellipse_50%_40%_at_20%_70%,rgba(56,189,248,0.2),transparent_45%)]" />
+        {showLightfall ? (
+          <Lightfall
+            colors={["#818cf8", "#a78bfa", "#38bdf8"]}
+            backgroundColor="#080d1a"
+            speed={0.7}
+            streakCount={4}
+            streakWidth={1.2}
+            streakLength={1.3}
+            glow={1}
+            density={0.7}
+            zoom={3}
+            backgroundGlow={0.35}
+            opacity={0.85}
+          />
+        ) : null}
       </div>
-      {/* 底部渐隐遮罩，保证文字可读 */}
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_70%_at_50%_40%,transparent_40%,var(--background)_100%)]"
         aria-hidden
       />
 
-      {/* 网格纹理 */}
       <div
         className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,color-mix(in_oklch,var(--foreground)_5%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_oklch,var(--foreground)_5%,transparent)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,black,transparent)] bg-[size:72px_72px]"
         aria-hidden

@@ -18,11 +18,16 @@ export const metadata: Metadata = {
   description: siteDescription,
 }
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+})
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
+  display: "swap",
 })
 
 export default function RootLayout({

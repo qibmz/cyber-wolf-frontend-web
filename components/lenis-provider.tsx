@@ -30,26 +30,44 @@ export function scrollToTop() {
  */
 export function LenisProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      smoothWheel: true,
-    })
-    lenisInstance = lenis
+    let cancelled = false
+    let lenis: Lenis | null = null
+    let raf: ((time: number) => void) | null = null
 
-    // Lenis 滚动时同步更新 ScrollTrigger
-    lenis.on("scroll", ScrollTrigger.update)
+    const start = () => {
+      if (cancelled) return
 
-    // 用 GSAP ticker 驱动 Lenis，保证动画与滚动同一时钟
-    const raf = (time: number) => {
-      lenis.raf(time * 1000)
+      lenis = new Lenis({
+        duration: 1.2,
+        smoothWheel: true,
+      })
+      lenisInstance = lenis
+
+      lenis.on("scroll", ScrollTrigger.update)
+
+      raf = (time: number) => {
+        lenis?.raf(time * 1000)
+      }
+      gsap.ticker.add(raf)
+      gsap.ticker.lagSmoothing(0)
     }
-    gsap.ticker.add(raf)
-    gsap.ticker.lagSmoothing(0)
+
+    // 等首屏绘制后再接管滚动，避免与首包争抢主线程
+    let idleId: number | undefined
+    let timeoutId: number | undefined
+    if (typeof window.requestIdleCallback === "function") {
+      idleId = window.requestIdleCallback(start, { timeout: 1500 })
+    } else {
+      timeoutId = window.setTimeout(start, 300)
+    }
 
     return () => {
-      gsap.ticker.remove(raf)
-      lenis.destroy()
-      lenisInstance = null
+      cancelled = true
+      if (idleId != null) window.cancelIdleCallback(idleId)
+      if (timeoutId != null) window.clearTimeout(timeoutId)
+      if (raf) gsap.ticker.remove(raf)
+      lenis?.destroy()
+      if (lenisInstance === lenis) lenisInstance = null
     }
   }, [])
 

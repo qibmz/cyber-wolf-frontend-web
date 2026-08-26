@@ -28,6 +28,7 @@
     "@x402/extensions": "^2.23.0",
     "@x402/svm": "^2.23.0",
     "axios": "^1.19.0",
+    "boring-avatars": "^2.0.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^13.1.0",

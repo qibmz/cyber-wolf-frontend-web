@@ -3,14 +3,10 @@
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAppKit, useAppKitAccount, useDisconnect } from "@reown/appkit/react"
-import { useChainId, useSignMessage } from "wagmi"
-import { createSiweMessage } from "viem/siwe"
 import { Loader2, Wallet } from "lucide-react"
 
-import {
-  authWalletControllerNonceV1,
-  useAuthWalletControllerLoginV1,
-} from "@/api/endpoints/auth"
+import { useAuthWalletControllerLoginV1 } from "@/api/endpoints/auth"
+import { useSiweAuth } from "@/hooks/use-siwe"
 import { Button } from "@/components/ui/button"
 import { getApiErrorMessage } from "@/lib/api-errors"
 import { saveAuthTokens } from "@/lib/auth"
@@ -39,8 +35,7 @@ export function WalletLogin({
   const { open } = useAppKit()
   const { address, isConnected } = useAppKitAccount()
   const { disconnect } = useDisconnect()
-  const chainId = useChainId()
-  const { signMessageAsync } = useSignMessage()
+  const siweAuth = useSiweAuth()
 
   const [busy, setBusy] = useState(false)
   const [flowError, setFlowError] = useState<string | null>(null)
@@ -62,29 +57,10 @@ export function WalletLogin({
     setFlowError(null)
     setBusy(true)
     try {
-      // 1. 获取登录 nonce
-      const nonceRes = await authWalletControllerNonceV1()
-      const nonce = nonceRes.data.nonce
-
-      // 2. 组装 EIP-4361 / SIWE 消息
-      const message = createSiweMessage({
-        address: addr as `0x${string}`,
-        chainId,
-        domain: window.location.host,
-        nonce,
-        uri: window.location.origin,
-        version: "1",
-        statement: "Sign in to Cyber Wolf",
-        issuedAt: new Date(),
-      })
-
-      // 3. 用钱包对消息签名（personal_sign）
-      const signature = await signMessageAsync({ message })
-
-      // 4. 提交登录
-      await login.mutateAsync({
-        data: { address: addr, message, signature, nonce },
-      })
+      // 获取 nonce -> 组装并签名 SIWE 消息
+      const payload = await siweAuth(addr)
+      // 提交登录
+      await login.mutateAsync({ data: payload })
       // 成功后的落地在 mutation.onSuccess 中处理
     } catch (err) {
       setFlowError(toErrorMessage(err))

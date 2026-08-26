@@ -28,6 +28,7 @@ import type {
   InfinityPaginationNewsArticleResponseDto,
   NewsArticle,
   NewsArticlesControllerFindAllV1Params,
+  NewsCategory,
 } from "./api.schemas"
 
 const withQueryKey = <T extends object, K>(
@@ -283,7 +284,7 @@ export const useNewsArticlesControllerFetchV1 = <
 }
 export const newsArticlesControllerFindCategoriesV1 = (
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<string[]>> => {
+): Promise<AxiosResponse<NewsCategory[]>> => {
   return axios.get(`/api/v1/news/categories`, options)
 }
 

@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils"
 const PAGE_SIZE = 9
 
 export function NewsList() {
-  const [category, setCategory] = useState<string | null>(null)
+  const [categoryId, setCategoryId] = useState<string | null>(null)
 
   const { data: categoriesData } = useQuery({
     queryKey: ["news-categories"],
@@ -28,12 +28,12 @@ export function NewsList() {
 
   const { data, fetchNextPage, hasNextPage, isLoading, isError, error } =
     useInfiniteQuery({
-      queryKey: ["news", category],
+      queryKey: ["news", categoryId],
       queryFn: ({ pageParam }) =>
         newsArticlesControllerFindAllV1({
           page: pageParam as number,
           limit: PAGE_SIZE,
-          ...(category ? { category } : {}),
+          ...(categoryId ? { categoryId } : {}),
         }),
       initialPageParam: 1,
       getNextPageParam: (lastPage, allPages) => {
@@ -48,8 +48,8 @@ export function NewsList() {
     [data]
   )
 
-  function handleCategoryChange(cat: string | null) {
-    setCategory(cat)
+  function handleCategoryChange(catId: string | null) {
+    setCategoryId(catId)
     scrollToTop()
   }
 
@@ -62,7 +62,7 @@ export function NewsList() {
             onClick={() => handleCategoryChange(null)}
             className={cn(
               "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
-              category === null
+              categoryId === null
                 ? "bg-primary text-primary-foreground"
                 : "bg-muted text-muted-foreground hover:text-foreground"
             )}
@@ -71,19 +71,19 @@ export function NewsList() {
           </button>
           {categories.map((cat) => (
             <button
-              key={cat}
+              key={cat.id}
               type="button"
               onClick={() =>
-                handleCategoryChange(cat === category ? null : cat)
+                handleCategoryChange(cat.id === categoryId ? null : cat.id)
               }
               className={cn(
                 "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
-                category === cat
+                categoryId === cat.id
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:text-foreground"
               )}
             >
-              {cat}
+              {cat.name}
             </button>
           ))}
         </div>

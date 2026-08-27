@@ -63,6 +63,7 @@ export function WalletLogin({
       await login.mutateAsync({ data: payload })
       // 成功后的落地在 mutation.onSuccess 中处理
     } catch (err) {
+      handledRef.current = null
       setFlowError(toErrorMessage(err))
     } finally {
       setBusy(false)

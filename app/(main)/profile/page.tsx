@@ -77,24 +77,37 @@ function BindWalletCard({ user }: { user: User }) {
 
   const isBound = !!user.walletAddress
 
+  async function runBind(addr: string) {
+    setBusy(true)
+    setError(null)
+    try {
+      const payload = await siweAuth(addr)
+      await bindWallet.mutateAsync({ data: payload })
+      handledAddress.current = addr
+    } catch (e) {
+      handledAddress.current = null
+      setError(toErrorMessage(e))
+    } finally {
+      setBusy(false)
+      shouldBind.current = false
+    }
+  }
+
   useEffect(() => {
     if (!shouldBind.current || !isConnected || !address) return
     if (handledAddress.current === address) return
-    handledAddress.current = address
-    shouldBind.current = false
-
-    setBusy(true)
-    setError(null)
-    siweAuth(address)
-      .then((payload) => bindWallet.mutateAsync({ data: payload }))
-      .catch((e) => setError(toErrorMessage(e)))
-      .finally(() => setBusy(false))
+    void runBind(address)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected, address])
 
   function handleBind() {
     setError(null)
     shouldBind.current = true
+    if (isConnected && address) {
+      handledAddress.current = null
+      void runBind(address)
+      return
+    }
     open({ view: "Connect" })
   }
 

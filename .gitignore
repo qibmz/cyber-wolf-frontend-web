@@ -18,6 +18,13 @@
 # production
 /build
 
+# IDE - VSCode (commit shared workspace settings only)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
 # misc
 .DS_Store
 *.pem
@@ -31,6 +38,9 @@ pnpm-debug.log*
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
+!.env
+!.env.development
+!.env.production
 
 # typescript
 *.tsbuildinfo
@@ -38,3 +48,4 @@ next-env.d.ts
 
 # pnpm 本地虚拟存储
 .pnpm-store
+.vercel

@@ -2,7 +2,9 @@ import type { Metadata } from "next"
 import Image from "next/image"
 
 import { LoginForm } from "@/components/auth/login-form"
+import { WalletLogin } from "@/components/auth/wallet-login"
 import { BrandLogo } from "@/components/layout/brand-logo"
+import { Separator } from "@/components/ui/separator"
 
 export async function generateMetadata(): Promise<Metadata> {
   return { title: "登录" }
@@ -18,6 +20,17 @@ export default function LoginPage() {
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
             <LoginForm />
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <Separator className="w-full" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  或
+                </span>
+              </div>
+            </div>
+            <WalletLogin />
           </div>
         </div>
       </div>

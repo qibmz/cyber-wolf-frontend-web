@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Geist_Mono, Inter } from "next/font/google"
+import { headers } from "next/headers"
 
 import "./globals.css"
 import { PageTitle } from "@/components/page-title"
@@ -30,11 +31,14 @@ const fontMono = Geist_Mono({
   display: "swap",
 })
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const headersObj = await headers()
+  const cookies = headersObj.get("cookie")
+
   return (
     <html
       lang="zh-CN"
@@ -48,7 +52,7 @@ export default function RootLayout({
       )}
     >
       <body>
-        <Providers>
+        <Providers cookies={cookies}>
           <PageTitle />
           {children}
         </Providers>

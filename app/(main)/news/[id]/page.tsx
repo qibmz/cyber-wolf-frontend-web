@@ -94,7 +94,7 @@ export default async function NewsDetailPage({
 
       <article className="flex flex-col gap-6">
         <ImagePreview
-          src={article.coverImage}
+          src={article.coverImage ?? undefined}
           alt={article.title}
           className="aspect-[16/9] w-full rounded-2xl"
         />

@@ -7,8 +7,8 @@ import { Menu } from "lucide-react"
 
 import { BrandLogo } from "@/components/layout/brand-logo"
 import { Container } from "@/components/layout/container"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { UserAvatar } from "@/components/ui/user-avatar"
 import {
   Sheet,
   SheetClose,
@@ -26,26 +26,14 @@ const NAV_ITEMS = [
   { label: "资讯", href: "/news" },
 ]
 
-function getAvatarUrl(photo: unknown): string | undefined {
-  if (typeof photo === "string" && photo) return photo
-  if (photo && typeof photo === "object" && "url" in photo) {
-    const url = (photo as { url?: unknown }).url
-    if (typeof url === "string" && url) return url
-  }
-  return undefined
-}
-
 export function Navbar() {
   const { user, isAuthenticated } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname()
 
-  const displayName =
-    user && (user.firstName || user.lastName)
-      ? `${user.firstName} ${user.lastName}`.trim()
-      : (user?.email ?? "")
-
-  const avatarUrl = user ? getAvatarUrl(user.photo) : undefined
+  const displayName = user?.nickname?.trim()
+    ? user.nickname
+    : (user?.email ?? "")
 
   function isActive(href: string) {
     return pathname === href || pathname.startsWith(`${href}/`)
@@ -79,14 +67,13 @@ export function Navbar() {
             {/* 桌面端：头像 / 登录按钮 */}
             <div className="hidden md:block">
               {isAuthenticated && user ? (
-                <Avatar className="size-8">
-                  {avatarUrl ? (
-                    <AvatarImage src={avatarUrl} alt={displayName} />
-                  ) : null}
-                  <AvatarFallback>
-                    {displayName.slice(0, 1).toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
+                <Link
+                  href="/profile"
+                  aria-label="个人中心"
+                  className="block rounded-full transition-opacity hover:opacity-90"
+                >
+                  <UserAvatar user={user} size={32} />
+                </Link>
               ) : (
                 <Button size="sm" render={<Link href="/login" />}>
                   登录
@@ -129,15 +116,12 @@ export function Navbar() {
 
                   <div className="mt-4 border-t pt-4">
                     {isAuthenticated && user ? (
-                      <div className="flex items-center gap-3 rounded-2xl px-3 py-2">
-                        <Avatar className="size-9">
-                          {avatarUrl ? (
-                            <AvatarImage src={avatarUrl} alt={displayName} />
-                          ) : null}
-                          <AvatarFallback>
-                            {displayName.slice(0, 1).toUpperCase() || "U"}
-                          </AvatarFallback>
-                        </Avatar>
+                      <Link
+                        href="/profile"
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-3 rounded-2xl px-3 py-2 transition-colors hover:bg-muted"
+                      >
+                        <UserAvatar user={user} size={36} />
                         <div className="min-w-0">
                           <p className="truncate text-sm font-medium">
                             {displayName}
@@ -146,7 +130,7 @@ export function Navbar() {
                             {user.email}
                           </p>
                         </div>
-                      </div>
+                      </Link>
                     ) : (
                       <SheetClose
                         render={<Link href="/login" className="block" />}

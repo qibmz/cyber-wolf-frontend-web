@@ -24,7 +24,7 @@ export function NewsCard({ article }: { article: NewsArticle }) {
       {/* 封面图 */}
       <div className="relative">
         <NewsImage
-          src={article.coverImage}
+          src={article.coverImage ?? undefined}
           alt={article.title}
           className="aspect-[16/9] w-full"
         />

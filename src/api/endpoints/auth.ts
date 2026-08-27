@@ -32,6 +32,9 @@ import type {
   AuthRegisterLoginDto,
   AuthResetPasswordDto,
   AuthUpdateDto,
+  AuthWalletBindEmailDto,
+  AuthWalletLoginDto,
+  AuthWalletNonceResponseDto,
   LoginResponseDto,
   RefreshResponseDto,
   User,
@@ -1037,6 +1040,381 @@ export const useAuthGoogleControllerLoginV1 = <
 > => {
   return useMutation(
     getAuthGoogleControllerLoginV1MutationOptions(options),
+    queryClient
+  )
+}
+export const authWalletControllerNonceV1 = (
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<AuthWalletNonceResponseDto>> => {
+  return axios.get(`/api/v1/auth/wallet/nonce`, options)
+}
+
+export const getAuthWalletControllerNonceV1QueryKey = () => {
+  return [`/api/v1/auth/wallet/nonce`] as const
+}
+
+export const getAuthWalletControllerNonceV1QueryOptions = <
+  TData = Awaited<ReturnType<typeof authWalletControllerNonceV1>>,
+  TError = AxiosError<unknown>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof authWalletControllerNonceV1>>,
+      TError,
+      TData
+    >
+  >
+  axios?: AxiosRequestConfig
+}) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getAuthWalletControllerNonceV1QueryKey()
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof authWalletControllerNonceV1>>
+  > = ({ signal }) => authWalletControllerNonceV1({ signal, ...axiosOptions })
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof authWalletControllerNonceV1>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthWalletControllerNonceV1QueryResult = NonNullable<
+  Awaited<ReturnType<typeof authWalletControllerNonceV1>>
+>
+export type AuthWalletControllerNonceV1QueryError = AxiosError<unknown>
+
+export function useAuthWalletControllerNonceV1<
+  TData = Awaited<ReturnType<typeof authWalletControllerNonceV1>>,
+  TError = AxiosError<unknown>,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof authWalletControllerNonceV1>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authWalletControllerNonceV1>>,
+          TError,
+          Awaited<ReturnType<typeof authWalletControllerNonceV1>>
+        >,
+        "initialData"
+      >
+    axios?: AxiosRequestConfig
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useAuthWalletControllerNonceV1<
+  TData = Awaited<ReturnType<typeof authWalletControllerNonceV1>>,
+  TError = AxiosError<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof authWalletControllerNonceV1>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authWalletControllerNonceV1>>,
+          TError,
+          Awaited<ReturnType<typeof authWalletControllerNonceV1>>
+        >,
+        "initialData"
+      >
+    axios?: AxiosRequestConfig
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useAuthWalletControllerNonceV1<
+  TData = Awaited<ReturnType<typeof authWalletControllerNonceV1>>,
+  TError = AxiosError<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof authWalletControllerNonceV1>>,
+        TError,
+        TData
+      >
+    >
+    axios?: AxiosRequestConfig
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+
+export function useAuthWalletControllerNonceV1<
+  TData = Awaited<ReturnType<typeof authWalletControllerNonceV1>>,
+  TError = AxiosError<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof authWalletControllerNonceV1>>,
+        TError,
+        TData
+      >
+    >
+    axios?: AxiosRequestConfig
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getAuthWalletControllerNonceV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  return withQueryKey(query, queryOptions.queryKey)
+}
+
+export const authWalletControllerLoginV1 = (
+  authWalletLoginDto: AuthWalletLoginDto,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<LoginResponseDto>> => {
+  return axios.post(`/api/v1/auth/wallet/login`, authWalletLoginDto, options)
+}
+
+export const getAuthWalletControllerLoginV1MutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof authWalletControllerLoginV1>>,
+    TError,
+    { data: AuthWalletLoginDto },
+    TContext
+  >
+  axios?: AxiosRequestConfig
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof authWalletControllerLoginV1>>,
+  TError,
+  { data: AuthWalletLoginDto },
+  TContext
+> => {
+  const mutationKey = ["authWalletControllerLoginV1"]
+  const { mutation: mutationOptions, axios: axiosOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, axios: undefined }
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof authWalletControllerLoginV1>>,
+    { data: AuthWalletLoginDto }
+  > = (props) => {
+    const { data } = props ?? {}
+
+    return authWalletControllerLoginV1(data, axiosOptions)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type AuthWalletControllerLoginV1MutationResult = NonNullable<
+  Awaited<ReturnType<typeof authWalletControllerLoginV1>>
+>
+export type AuthWalletControllerLoginV1MutationBody = AuthWalletLoginDto
+export type AuthWalletControllerLoginV1MutationError = AxiosError<unknown>
+
+export const useAuthWalletControllerLoginV1 = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof authWalletControllerLoginV1>>,
+      TError,
+      { data: AuthWalletLoginDto },
+      TContext
+    >
+    axios?: AxiosRequestConfig
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof authWalletControllerLoginV1>>,
+  TError,
+  { data: AuthWalletLoginDto },
+  TContext
+> => {
+  return useMutation(
+    getAuthWalletControllerLoginV1MutationOptions(options),
+    queryClient
+  )
+}
+export const authWalletControllerBindV1 = (
+  authWalletLoginDto: AuthWalletLoginDto,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<User>> => {
+  return axios.post(`/api/v1/auth/wallet/bind`, authWalletLoginDto, options)
+}
+
+export const getAuthWalletControllerBindV1MutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof authWalletControllerBindV1>>,
+    TError,
+    { data: AuthWalletLoginDto },
+    TContext
+  >
+  axios?: AxiosRequestConfig
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof authWalletControllerBindV1>>,
+  TError,
+  { data: AuthWalletLoginDto },
+  TContext
+> => {
+  const mutationKey = ["authWalletControllerBindV1"]
+  const { mutation: mutationOptions, axios: axiosOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, axios: undefined }
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof authWalletControllerBindV1>>,
+    { data: AuthWalletLoginDto }
+  > = (props) => {
+    const { data } = props ?? {}
+
+    return authWalletControllerBindV1(data, axiosOptions)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type AuthWalletControllerBindV1MutationResult = NonNullable<
+  Awaited<ReturnType<typeof authWalletControllerBindV1>>
+>
+export type AuthWalletControllerBindV1MutationBody = AuthWalletLoginDto
+export type AuthWalletControllerBindV1MutationError = AxiosError<unknown>
+
+export const useAuthWalletControllerBindV1 = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof authWalletControllerBindV1>>,
+      TError,
+      { data: AuthWalletLoginDto },
+      TContext
+    >
+    axios?: AxiosRequestConfig
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof authWalletControllerBindV1>>,
+  TError,
+  { data: AuthWalletLoginDto },
+  TContext
+> => {
+  return useMutation(
+    getAuthWalletControllerBindV1MutationOptions(options),
+    queryClient
+  )
+}
+export const authWalletControllerBindEmailV1 = (
+  authWalletBindEmailDto: AuthWalletBindEmailDto,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<User>> => {
+  return axios.post(
+    `/api/v1/auth/wallet/bind/email`,
+    authWalletBindEmailDto,
+    options
+  )
+}
+
+export const getAuthWalletControllerBindEmailV1MutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof authWalletControllerBindEmailV1>>,
+    TError,
+    { data: AuthWalletBindEmailDto },
+    TContext
+  >
+  axios?: AxiosRequestConfig
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof authWalletControllerBindEmailV1>>,
+  TError,
+  { data: AuthWalletBindEmailDto },
+  TContext
+> => {
+  const mutationKey = ["authWalletControllerBindEmailV1"]
+  const { mutation: mutationOptions, axios: axiosOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, axios: undefined }
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof authWalletControllerBindEmailV1>>,
+    { data: AuthWalletBindEmailDto }
+  > = (props) => {
+    const { data } = props ?? {}
+
+    return authWalletControllerBindEmailV1(data, axiosOptions)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type AuthWalletControllerBindEmailV1MutationResult = NonNullable<
+  Awaited<ReturnType<typeof authWalletControllerBindEmailV1>>
+>
+export type AuthWalletControllerBindEmailV1MutationBody = AuthWalletBindEmailDto
+export type AuthWalletControllerBindEmailV1MutationError = AxiosError<unknown>
+
+export const useAuthWalletControllerBindEmailV1 = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof authWalletControllerBindEmailV1>>,
+      TError,
+      { data: AuthWalletBindEmailDto },
+      TContext
+    >
+    axios?: AxiosRequestConfig
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof authWalletControllerBindEmailV1>>,
+  TError,
+  { data: AuthWalletBindEmailDto },
+  TContext
+> => {
+  return useMutation(
+    getAuthWalletControllerBindEmailV1MutationOptions(options),
     queryClient
   )
 }

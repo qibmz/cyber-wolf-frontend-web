@@ -5,12 +5,50 @@
  * API docs
  * OpenAPI spec version: 1.0
  */
+export interface CreateNewsCategoryDto {
+  name: string
+  /** 越小越靠前 */
+  sortOrder?: number
+}
+
+/**
+ * @nullable
+ */
+export type NewsCategoryDeletedAt = { [key: string]: unknown } | null
+
+export interface NewsCategory {
+  name: string
+  sortOrder: number
+  id: string
+  createdAt: string
+  updatedAt: string
+  /** @nullable */
+  deletedAt?: NewsCategoryDeletedAt
+}
+
+export interface InfinityPaginationNewsCategoryResponseDto {
+  data: NewsCategory[]
+  hasNextPage: boolean
+  total: number
+}
+
+export interface UpdateNewsCategoryDto {
+  name?: string
+  /** 越小越靠前 */
+  sortOrder?: number
+}
+
+/**
+ * @nullable
+ */
+export type NewsArticleDeletedAt = { [key: string]: unknown } | null
+
 export interface NewsArticle {
-  coverColor: string
   sourceName: string
   sourceId: string
   publishedAt: string
-  coverImage: string
+  /** @nullable */
+  coverImage?: string | null
   category: string
   url: string
   summary: string
@@ -18,34 +56,55 @@ export interface NewsArticle {
   id: string
   createdAt: string
   updatedAt: string
+  /** @nullable */
+  deletedAt?: NewsArticleDeletedAt
 }
 
 export interface InfinityPaginationNewsArticleResponseDto {
   data: NewsArticle[]
   hasNextPage: boolean
+  total: number
+}
+
+export interface CreateNewsArticleDto {
+  sourceName: string
+  sourceId: string
+  publishedAt: string
+  coverImage?: string
+  category: string
+  url: string
+  summary: string
+  title: string
+}
+
+export interface UpdateNewsArticleDto {
+  sourceName?: string
+  sourceId?: string
+  publishedAt?: string
+  coverImage?: string
+  category?: string
+  url?: string
+  summary?: string
+  title?: string
 }
 
 export interface FileDto {
   id: string
 }
 
-export type RoleDtoId = { [key: string]: unknown }
-
 export interface RoleDto {
-  id: RoleDtoId
+  id: number
 }
 
-export type StatusDtoId = { [key: string]: unknown }
-
 export interface StatusDto {
-  id: StatusDtoId
+  id: number
 }
 
 export interface CreateUserDto {
+  walletAddress?: string
+  nickname?: string
   email: string
   password: string
-  firstName: string
-  lastName: string
   photo?: FileDto
   role?: RoleDto
   status?: StatusDto
@@ -67,12 +126,14 @@ export interface Status {
 }
 
 export interface User {
+  /** @nullable */
+  walletAddress: string | null
+  /** @nullable */
+  nickname: string | null
   id: number
   email: string
   provider: string
   socialId: string
-  firstName: string
-  lastName: string
   photo: FileType
   role: Role
   status: Status
@@ -84,13 +145,14 @@ export interface User {
 export interface InfinityPaginationUserResponseDto {
   data: User[]
   hasNextPage: boolean
+  total: number
 }
 
 export interface UpdateUserDto {
+  walletAddress?: string
+  nickname?: string
   email?: string
   password?: string
-  firstName?: string
-  lastName?: string
   photo?: FileDto
   role?: RoleDto
   status?: StatusDto
@@ -115,8 +177,7 @@ export interface LoginResponseDto {
 export interface AuthRegisterLoginDto {
   email: string
   password: string
-  firstName: string
-  lastName: string
+  nickname: string
 }
 
 export interface AuthConfirmEmailDto {
@@ -140,8 +201,7 @@ export interface RefreshResponseDto {
 
 export interface AuthUpdateDto {
   photo?: FileDto
-  firstName?: string
-  lastName?: string
+  nickname?: string
   email?: string
   password?: string
   oldPassword?: string
@@ -151,6 +211,41 @@ export interface AuthGoogleLoginDto {
   idToken: string
 }
 
+export interface AuthWalletNonceResponseDto {
+  nonce: string
+}
+
+export interface AuthWalletLoginDto {
+  address: string
+  /** EIP-4361 / SIWE message */
+  message: string
+  signature: string
+  nonce: string
+}
+
+export interface AuthWalletBindEmailDto {
+  email: string
+  password?: string
+}
+
+export type NewsCategoriesAdminControllerFindAllV1Params = {
+  page?: number
+  limit?: number
+  /**
+   * all=全部，notDeleted=未删除，deleted=已删除；默认 all
+   */
+  deletedStatus?: NewsCategoriesAdminControllerFindAllV1DeletedStatus
+}
+
+export type NewsCategoriesAdminControllerFindAllV1DeletedStatus =
+  (typeof NewsCategoriesAdminControllerFindAllV1DeletedStatus)[keyof typeof NewsCategoriesAdminControllerFindAllV1DeletedStatus]
+
+export const NewsCategoriesAdminControllerFindAllV1DeletedStatus = {
+  all: "all",
+  notDeleted: "notDeleted",
+  deleted: "deleted",
+} as const
+
 export type NewsArticlesControllerFindAllV1Params = {
   page?: number
   limit?: number
@@ -158,7 +253,37 @@ export type NewsArticlesControllerFindAllV1Params = {
    * 按分类筛选（如 Market / Technology）
    */
   category?: string
+  /**
+   * 按分类 id 筛选（存在时优先于 category 名字）
+   */
+  categoryId?: string
 }
+
+export type NewsArticlesAdminControllerFindAllV1Params = {
+  page?: number
+  limit?: number
+  /**
+   * 按分类筛选（如 Market / Technology）
+   */
+  category?: string
+  /**
+   * 按分类 id 筛选（存在时优先于 category 名字）
+   */
+  categoryId?: string
+  /**
+   * all=全部，notDeleted=未删除，deleted=已删除；默认 all
+   */
+  deletedStatus?: NewsArticlesAdminControllerFindAllV1DeletedStatus
+}
+
+export type NewsArticlesAdminControllerFindAllV1DeletedStatus =
+  (typeof NewsArticlesAdminControllerFindAllV1DeletedStatus)[keyof typeof NewsArticlesAdminControllerFindAllV1DeletedStatus]
+
+export const NewsArticlesAdminControllerFindAllV1DeletedStatus = {
+  all: "all",
+  notDeleted: "notDeleted",
+  deleted: "deleted",
+} as const
 
 export type UsersControllerFindAllV1Params = {
   page?: number
@@ -167,6 +292,6 @@ export type UsersControllerFindAllV1Params = {
   sort?: string
 }
 
-export type FilesLocalControllerUploadFileV1Body = {
+export type FilesS3ControllerUploadFileV1Body = {
   file?: Blob
 }

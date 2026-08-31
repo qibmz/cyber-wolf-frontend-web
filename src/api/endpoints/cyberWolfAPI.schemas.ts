@@ -547,6 +547,6 @@ export type UsersControllerFindAllV1Params = {
   sort?: string
 }
 
-export type FilesS3ControllerUploadFileV1Body = {
+export type FilesLocalControllerUploadFileV1Body = {
   file?: Blob
 }

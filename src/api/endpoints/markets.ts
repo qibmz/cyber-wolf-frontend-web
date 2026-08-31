@@ -22,8 +22,8 @@ import axios from "axios"
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios"
 
 import type {
-  ApiSuccessInfinityPaginationMarketResponseDtoResponseDto,
-  ApiSuccessMarketNullableResponseDto,
+  InfinityPaginationMarketResponseDto,
+  Market,
   MarketsControllerFindAllV1Params,
 } from "./cyberWolfAPI.schemas"
 
@@ -51,9 +51,7 @@ const withQueryKey = <T extends object, K>(
 export const marketsControllerFindAllV1 = (
   params?: MarketsControllerFindAllV1Params,
   options?: AxiosRequestConfig
-): Promise<
-  AxiosResponse<ApiSuccessInfinityPaginationMarketResponseDtoResponseDto>
-> => {
+): Promise<AxiosResponse<InfinityPaginationMarketResponseDto>> => {
   return axios.get(`/api/v1/markets`, {
     ...options,
     params: { ...params, ...options?.params },
@@ -219,7 +217,7 @@ export function useMarketsControllerFindAllV1<
 export const marketsControllerFindOneV1 = (
   symbol: string,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessMarketNullableResponseDto>> => {
+): Promise<AxiosResponse<Market | null>> => {
   return axios.get(`/api/v1/markets/${symbol}`, options)
 }
 

@@ -25,11 +25,11 @@ import axios from "axios"
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios"
 
 import type {
-  ApiSuccessFetchResultDtoArrayResponseDto,
-  ApiSuccessInfinityPaginationNewsArticleResponseDtoResponseDto,
-  ApiSuccessNewsArticleNullableResponseDto,
-  ApiSuccessNewsCategoryArrayResponseDto,
+  FetchResultDto,
+  InfinityPaginationNewsArticleResponseDto,
+  NewsArticle,
   NewsArticlesControllerFindAllV1Params,
+  NewsCategory,
 } from "./cyberWolfAPI.schemas"
 
 const withQueryKey = <T extends object, K>(
@@ -56,9 +56,7 @@ const withQueryKey = <T extends object, K>(
 export const newsArticlesControllerFindAllV1 = (
   params?: NewsArticlesControllerFindAllV1Params,
   options?: AxiosRequestConfig
-): Promise<
-  AxiosResponse<ApiSuccessInfinityPaginationNewsArticleResponseDtoResponseDto>
-> => {
+): Promise<AxiosResponse<InfinityPaginationNewsArticleResponseDto>> => {
   return axios.get(`/api/v1/news`, {
     ...options,
     params: { ...params, ...options?.params },
@@ -223,7 +221,7 @@ export function useNewsArticlesControllerFindAllV1<
  */
 export const newsArticlesControllerFetchV1 = (
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessFetchResultDtoArrayResponseDto>> => {
+): Promise<AxiosResponse<FetchResultDto[]>> => {
   return axios.post(`/api/v1/news/fetch`, undefined, options)
 }
 
@@ -302,7 +300,7 @@ export const useNewsArticlesControllerFetchV1 = <
  */
 export const newsArticlesControllerFindCategoriesV1 = (
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessNewsCategoryArrayResponseDto>> => {
+): Promise<AxiosResponse<NewsCategory[]>> => {
   return axios.get(`/api/v1/news/categories`, options)
 }
 
@@ -456,7 +454,7 @@ export function useNewsArticlesControllerFindCategoriesV1<
 export const newsArticlesControllerFindByIdV1 = (
   id: string,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessNewsArticleNullableResponseDto>> => {
+): Promise<AxiosResponse<NewsArticle | null>> => {
   return axios.get(`/api/v1/news/${id}`, options)
 }
 

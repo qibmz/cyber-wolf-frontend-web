@@ -25,11 +25,9 @@ import axios from "axios"
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios"
 
 import type {
-  ApiSuccessInfinityPaginationNewsArticleResponseDtoResponseDto,
-  ApiSuccessNewsArticle201ResponseDto,
-  ApiSuccessNewsArticleNullableResponseDto,
-  ApiSuccessNewsArticleResponseDto,
   CreateNewsArticleDto,
+  InfinityPaginationNewsArticleResponseDto,
+  NewsArticle,
   NewsArticlesAdminControllerFindAllV1Params,
   UpdateNewsArticleDto,
 } from "./cyberWolfAPI.schemas"
@@ -58,7 +56,7 @@ const withQueryKey = <T extends object, K>(
 export const newsArticlesAdminControllerCreateV1 = (
   createNewsArticleDto: CreateNewsArticleDto,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessNewsArticle201ResponseDto>> => {
+): Promise<AxiosResponse<NewsArticle>> => {
   return axios.post(`/api/v1/admin/news`, createNewsArticleDto, options)
 }
 
@@ -142,9 +140,7 @@ export const useNewsArticlesAdminControllerCreateV1 = <
 export const newsArticlesAdminControllerFindAllV1 = (
   params?: NewsArticlesAdminControllerFindAllV1Params,
   options?: AxiosRequestConfig
-): Promise<
-  AxiosResponse<ApiSuccessInfinityPaginationNewsArticleResponseDtoResponseDto>
-> => {
+): Promise<AxiosResponse<InfinityPaginationNewsArticleResponseDto>> => {
   return axios.get(`/api/v1/admin/news`, {
     ...options,
     params: { ...params, ...options?.params },
@@ -311,7 +307,7 @@ export function useNewsArticlesAdminControllerFindAllV1<
 export const newsArticlesAdminControllerFindByIdV1 = (
   id: string,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessNewsArticleNullableResponseDto>> => {
+): Promise<AxiosResponse<NewsArticle | null>> => {
   return axios.get(`/api/v1/admin/news/${id}`, options)
 }
 
@@ -482,7 +478,7 @@ export const newsArticlesAdminControllerUpdateV1 = (
   id: string,
   updateNewsArticleDto: UpdateNewsArticleDto,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessNewsArticleNullableResponseDto>> => {
+): Promise<AxiosResponse<NewsArticle | null>> => {
   return axios.patch(`/api/v1/admin/news/${id}`, updateNewsArticleDto, options)
 }
 
@@ -649,7 +645,7 @@ export const useNewsArticlesAdminControllerRemoveV1 = <
 export const newsArticlesAdminControllerRestoreV1 = (
   id: string,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessNewsArticleResponseDto>> => {
+): Promise<AxiosResponse<NewsArticle>> => {
   return axios.patch(`/api/v1/admin/news/${id}/restore`, undefined, options)
 }
 

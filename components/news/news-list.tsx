@@ -37,7 +37,6 @@ export function NewsList() {
         }),
       initialPageParam: 1,
       getNextPageParam: (lastPage, allPages) => {
-        // 拦截器已解包，lastPage.data = { data, hasNextPage }
         const body = lastPage.data
         return body.hasNextPage ? allPages.length + 1 : undefined
       },

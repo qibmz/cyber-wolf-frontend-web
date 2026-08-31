@@ -184,26 +184,17 @@ export function MarketsList() {
       }),
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
-      // axios 拦截器已解包 { code,msg,data }，运行时 lastPage.data 为分页体
-      const body =
-        lastPage.data as unknown as InfinityPaginationMarketResponseDto
+      const body = lastPage.data
       return body.hasNextPage ? allPages.length + 1 : undefined
     },
   })
 
   const markets = useMemo(
-    () =>
-      data?.pages.flatMap((page) => {
-        const body = page.data as unknown as InfinityPaginationMarketResponseDto
-        return body.data
-      }) ?? [],
+    () => data?.pages.flatMap((page) => page.data.data) ?? [],
     [data]
   )
 
-  const total = (
-    data?.pages[0]?.data as unknown as
-      InfinityPaginationMarketResponseDto | undefined
-  )?.total
+  const total = data?.pages[0]?.data.total
 
   return (
     <div className="flex flex-col gap-5">

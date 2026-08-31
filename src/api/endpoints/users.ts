@@ -25,11 +25,10 @@ import axios from "axios"
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios"
 
 import type {
-  ApiSuccessInfinityPaginationUserResponseDtoResponseDto,
-  ApiSuccessUser201ResponseDto,
-  ApiSuccessUserNullableResponseDto,
   CreateUserDto,
+  InfinityPaginationUserResponseDto,
   UpdateUserDto,
+  User,
   UsersControllerFindAllV1Params,
 } from "./cyberWolfAPI.schemas"
 
@@ -57,7 +56,7 @@ const withQueryKey = <T extends object, K>(
 export const usersControllerCreateV1 = (
   createUserDto: CreateUserDto,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessUser201ResponseDto>> => {
+): Promise<AxiosResponse<User>> => {
   return axios.post(`/api/v1/users`, createUserDto, options)
 }
 
@@ -139,9 +138,7 @@ export const useUsersControllerCreateV1 = <
 export const usersControllerFindAllV1 = (
   params?: UsersControllerFindAllV1Params,
   options?: AxiosRequestConfig
-): Promise<
-  AxiosResponse<ApiSuccessInfinityPaginationUserResponseDtoResponseDto>
-> => {
+): Promise<AxiosResponse<InfinityPaginationUserResponseDto>> => {
   return axios.get(`/api/v1/users`, {
     ...options,
     params: { ...params, ...options?.params },
@@ -304,7 +301,7 @@ export function useUsersControllerFindAllV1<
 export const usersControllerFindOneV1 = (
   id: string,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessUserNullableResponseDto>> => {
+): Promise<AxiosResponse<User | null>> => {
   return axios.get(`/api/v1/users/${id}`, options)
 }
 
@@ -467,7 +464,7 @@ export const usersControllerUpdateV1 = (
   id: string,
   updateUserDto: UpdateUserDto,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessUserNullableResponseDto>> => {
+): Promise<AxiosResponse<User | null>> => {
   return axios.patch(`/api/v1/users/${id}`, updateUserDto, options)
 }
 

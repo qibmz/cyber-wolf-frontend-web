@@ -17,43 +17,43 @@ import axios from "axios"
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios"
 
 import type {
-  ApiSuccessFileResponseDto201ResponseDto,
-  FilesS3ControllerUploadFileV1Body,
+  FileResponseDto,
+  FilesLocalControllerUploadFileV1Body,
 } from "./cyberWolfAPI.schemas"
 
 /**
- * @summary 上传文件（S3/R2）
+ * @summary 上传文件（本地）
  */
-export const filesS3ControllerUploadFileV1 = (
-  filesS3ControllerUploadFileV1Body: FilesS3ControllerUploadFileV1Body,
+export const filesLocalControllerUploadFileV1 = (
+  filesLocalControllerUploadFileV1Body: FilesLocalControllerUploadFileV1Body,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessFileResponseDto201ResponseDto>> => {
+): Promise<AxiosResponse<FileResponseDto>> => {
   const formData = new FormData()
-  if (filesS3ControllerUploadFileV1Body.file !== undefined) {
-    formData.append(`file`, filesS3ControllerUploadFileV1Body.file)
+  if (filesLocalControllerUploadFileV1Body.file !== undefined) {
+    formData.append(`file`, filesLocalControllerUploadFileV1Body.file)
   }
 
   return axios.post(`/api/v1/files/upload`, formData, options)
 }
 
-export const getFilesS3ControllerUploadFileV1MutationOptions = <
+export const getFilesLocalControllerUploadFileV1MutationOptions = <
   TError = AxiosError<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof filesS3ControllerUploadFileV1>>,
+    Awaited<ReturnType<typeof filesLocalControllerUploadFileV1>>,
     TError,
-    { data: FilesS3ControllerUploadFileV1Body },
+    { data: FilesLocalControllerUploadFileV1Body },
     TContext
   >
   axios?: AxiosRequestConfig
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof filesS3ControllerUploadFileV1>>,
+  Awaited<ReturnType<typeof filesLocalControllerUploadFileV1>>,
   TError,
-  { data: FilesS3ControllerUploadFileV1Body },
+  { data: FilesLocalControllerUploadFileV1Body },
   TContext
 > => {
-  const mutationKey = ["filesS3ControllerUploadFileV1"]
+  const mutationKey = ["filesLocalControllerUploadFileV1"]
   const { mutation: mutationOptions, axios: axiosOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -63,49 +63,49 @@ export const getFilesS3ControllerUploadFileV1MutationOptions = <
     : { mutation: { mutationKey }, axios: undefined }
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof filesS3ControllerUploadFileV1>>,
-    { data: FilesS3ControllerUploadFileV1Body }
+    Awaited<ReturnType<typeof filesLocalControllerUploadFileV1>>,
+    { data: FilesLocalControllerUploadFileV1Body }
   > = (props) => {
     const { data } = props ?? {}
 
-    return filesS3ControllerUploadFileV1(data, axiosOptions)
+    return filesLocalControllerUploadFileV1(data, axiosOptions)
   }
 
   return { mutationFn, ...mutationOptions }
 }
 
-export type FilesS3ControllerUploadFileV1MutationResult = NonNullable<
-  Awaited<ReturnType<typeof filesS3ControllerUploadFileV1>>
+export type FilesLocalControllerUploadFileV1MutationResult = NonNullable<
+  Awaited<ReturnType<typeof filesLocalControllerUploadFileV1>>
 >
-export type FilesS3ControllerUploadFileV1MutationBody =
-  FilesS3ControllerUploadFileV1Body
-export type FilesS3ControllerUploadFileV1MutationError = AxiosError<unknown>
+export type FilesLocalControllerUploadFileV1MutationBody =
+  FilesLocalControllerUploadFileV1Body
+export type FilesLocalControllerUploadFileV1MutationError = AxiosError<unknown>
 
 /**
- * @summary 上传文件（S3/R2）
+ * @summary 上传文件（本地）
  */
-export const useFilesS3ControllerUploadFileV1 = <
+export const useFilesLocalControllerUploadFileV1 = <
   TError = AxiosError<unknown>,
   TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof filesS3ControllerUploadFileV1>>,
+      Awaited<ReturnType<typeof filesLocalControllerUploadFileV1>>,
       TError,
-      { data: FilesS3ControllerUploadFileV1Body },
+      { data: FilesLocalControllerUploadFileV1Body },
       TContext
     >
     axios?: AxiosRequestConfig
   },
   queryClient?: QueryClient
 ): UseMutationResult<
-  Awaited<ReturnType<typeof filesS3ControllerUploadFileV1>>,
+  Awaited<ReturnType<typeof filesLocalControllerUploadFileV1>>,
   TError,
-  { data: FilesS3ControllerUploadFileV1Body },
+  { data: FilesLocalControllerUploadFileV1Body },
   TContext
 > => {
   return useMutation(
-    getFilesS3ControllerUploadFileV1MutationOptions(options),
+    getFilesLocalControllerUploadFileV1MutationOptions(options),
     queryClient
   )
 }

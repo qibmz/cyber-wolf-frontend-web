@@ -30,8 +30,7 @@ export function MarketDetail({ symbol }: { symbol: string }) {
     queryFn: () => marketsControllerFindOneV1(symbol),
   })
 
-  // 拦截器解包后 response.data 为 Market | null（Orval 类型仍是包装层）
-  const market = (data?.data as unknown as Market | null | undefined) ?? null
+  const market = data?.data ?? null
 
   if (isLoading) {
     return (

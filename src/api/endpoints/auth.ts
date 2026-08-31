@@ -25,10 +25,6 @@ import axios from "axios"
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios"
 
 import type {
-  ApiSuccessAuthWalletNonceResponseDtoResponseDto,
-  ApiSuccessLoginResponseDtoResponseDto,
-  ApiSuccessRefreshResponseDtoResponseDto,
-  ApiSuccessUserNullableResponseDto,
   AuthConfirmEmailDto,
   AuthEmailLoginDto,
   AuthForgotPasswordDto,
@@ -38,6 +34,10 @@ import type {
   AuthUpdateDto,
   AuthWalletBindEmailDto,
   AuthWalletLoginDto,
+  AuthWalletNonceResponseDto,
+  LoginResponseDto,
+  RefreshResponseDto,
+  User,
 } from "./cyberWolfAPI.schemas"
 
 const withQueryKey = <T extends object, K>(
@@ -64,7 +64,7 @@ const withQueryKey = <T extends object, K>(
 export const authControllerLoginV1 = (
   authEmailLoginDto: AuthEmailLoginDto,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessLoginResponseDtoResponseDto>> => {
+): Promise<AxiosResponse<LoginResponseDto>> => {
   return axios.post(`/api/v1/auth/email/login`, authEmailLoginDto, options)
 }
 
@@ -571,7 +571,7 @@ export const useAuthControllerResetPasswordV1 = <
  */
 export const authControllerMeV1 = (
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessUserNullableResponseDto>> => {
+): Promise<AxiosResponse<User | null>> => {
   return axios.get(`/api/v1/auth/me`, options)
 }
 
@@ -720,7 +720,7 @@ export function useAuthControllerMeV1<
 export const authControllerUpdateV1 = (
   authUpdateDto: AuthUpdateDto,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessUserNullableResponseDto>> => {
+): Promise<AxiosResponse<User | null>> => {
   return axios.patch(`/api/v1/auth/me`, authUpdateDto, options)
 }
 
@@ -880,7 +880,7 @@ export const useAuthControllerDeleteV1 = <
  */
 export const authControllerRefreshV1 = (
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessRefreshResponseDtoResponseDto>> => {
+): Promise<AxiosResponse<RefreshResponseDto>> => {
   return axios.post(`/api/v1/auth/refresh`, undefined, options)
 }
 
@@ -1039,7 +1039,7 @@ export const useAuthControllerLogoutV1 = <
 export const authGoogleControllerLoginV1 = (
   authGoogleLoginDto: AuthGoogleLoginDto,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessLoginResponseDtoResponseDto>> => {
+): Promise<AxiosResponse<LoginResponseDto>> => {
   return axios.post(`/api/v1/auth/google/login`, authGoogleLoginDto, options)
 }
 
@@ -1120,7 +1120,7 @@ export const useAuthGoogleControllerLoginV1 = <
  */
 export const authWalletControllerNonceV1 = (
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessAuthWalletNonceResponseDtoResponseDto>> => {
+): Promise<AxiosResponse<AuthWalletNonceResponseDto>> => {
   return axios.get(`/api/v1/auth/wallet/nonce`, options)
 }
 
@@ -1270,7 +1270,7 @@ export function useAuthWalletControllerNonceV1<
 export const authWalletControllerLoginV1 = (
   authWalletLoginDto: AuthWalletLoginDto,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessLoginResponseDtoResponseDto>> => {
+): Promise<AxiosResponse<LoginResponseDto>> => {
   return axios.post(`/api/v1/auth/wallet/login`, authWalletLoginDto, options)
 }
 
@@ -1352,7 +1352,7 @@ export const useAuthWalletControllerLoginV1 = <
 export const authWalletControllerBindV1 = (
   authWalletLoginDto: AuthWalletLoginDto,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessUserNullableResponseDto>> => {
+): Promise<AxiosResponse<User | null>> => {
   return axios.post(`/api/v1/auth/wallet/bind`, authWalletLoginDto, options)
 }
 
@@ -1434,7 +1434,7 @@ export const useAuthWalletControllerBindV1 = <
 export const authWalletControllerBindEmailV1 = (
   authWalletBindEmailDto: AuthWalletBindEmailDto,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessUserNullableResponseDto>> => {
+): Promise<AxiosResponse<User | null>> => {
   return axios.post(
     `/api/v1/auth/wallet/bind/email`,
     authWalletBindEmailDto,

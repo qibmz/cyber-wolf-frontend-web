@@ -21,7 +21,7 @@ import type {
 import axios from "axios"
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios"
 
-import type { ApiSuccessAppInfoDtoResponseDto } from "./cyberWolfAPI.schemas"
+import type { AppInfoDto } from "./cyberWolfAPI.schemas"
 
 const withQueryKey = <T extends object, K>(
   query: T,
@@ -46,7 +46,7 @@ const withQueryKey = <T extends object, K>(
  */
 export const homeControllerAppInfo = (
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessAppInfoDtoResponseDto>> => {
+): Promise<AxiosResponse<AppInfoDto>> => {
   return axios.get(`/`, options)
 }
 

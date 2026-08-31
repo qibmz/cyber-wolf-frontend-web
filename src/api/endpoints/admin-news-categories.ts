@@ -25,12 +25,10 @@ import axios from "axios"
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios"
 
 import type {
-  ApiSuccessInfinityPaginationNewsCategoryResponseDtoResponseDto,
-  ApiSuccessNewsCategory201ResponseDto,
-  ApiSuccessNewsCategoryNullableResponseDto,
-  ApiSuccessNewsCategoryResponseDto,
   CreateNewsCategoryDto,
+  InfinityPaginationNewsCategoryResponseDto,
   NewsCategoriesAdminControllerFindAllV1Params,
+  NewsCategory,
   UpdateNewsCategoryDto,
 } from "./cyberWolfAPI.schemas"
 
@@ -58,7 +56,7 @@ const withQueryKey = <T extends object, K>(
 export const newsCategoriesAdminControllerCreateV1 = (
   createNewsCategoryDto: CreateNewsCategoryDto,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessNewsCategory201ResponseDto>> => {
+): Promise<AxiosResponse<NewsCategory>> => {
   return axios.post(
     `/api/v1/admin/news-categories`,
     createNewsCategoryDto,
@@ -146,9 +144,7 @@ export const useNewsCategoriesAdminControllerCreateV1 = <
 export const newsCategoriesAdminControllerFindAllV1 = (
   params?: NewsCategoriesAdminControllerFindAllV1Params,
   options?: AxiosRequestConfig
-): Promise<
-  AxiosResponse<ApiSuccessInfinityPaginationNewsCategoryResponseDtoResponseDto>
-> => {
+): Promise<AxiosResponse<InfinityPaginationNewsCategoryResponseDto>> => {
   return axios.get(`/api/v1/admin/news-categories`, {
     ...options,
     params: { ...params, ...options?.params },
@@ -316,7 +312,7 @@ export function useNewsCategoriesAdminControllerFindAllV1<
 export const newsCategoriesAdminControllerFindByIdV1 = (
   id: string,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessNewsCategoryNullableResponseDto>> => {
+): Promise<AxiosResponse<NewsCategory | null>> => {
   return axios.get(`/api/v1/admin/news-categories/${id}`, options)
 }
 
@@ -487,7 +483,7 @@ export const newsCategoriesAdminControllerUpdateV1 = (
   id: string,
   updateNewsCategoryDto: UpdateNewsCategoryDto,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessNewsCategoryNullableResponseDto>> => {
+): Promise<AxiosResponse<NewsCategory | null>> => {
   return axios.patch(
     `/api/v1/admin/news-categories/${id}`,
     updateNewsCategoryDto,
@@ -658,7 +654,7 @@ export const useNewsCategoriesAdminControllerRemoveV1 = <
 export const newsCategoriesAdminControllerRestoreV1 = (
   id: string,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiSuccessNewsCategoryResponseDto>> => {
+): Promise<AxiosResponse<NewsCategory>> => {
   return axios.patch(
     `/api/v1/admin/news-categories/${id}/restore`,
     undefined,

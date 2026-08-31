@@ -47,6 +47,7 @@ function MarketDesktopRow({
   return (
     <Link
       href={`/markets/${encodeURIComponent(market.symbol)}`}
+      prefetch={false}
       className={cn(
         "hidden grid-cols-[minmax(0,2fr)_repeat(5,minmax(0,1fr))] items-center gap-3 border-b border-border/60 px-3 py-3 transition-colors md:grid",
         "hover:bg-muted/40 focus-visible:bg-muted/40 focus-visible:outline-none"
@@ -96,6 +97,7 @@ function MarketMobileRow({ market }: { market: Market }) {
   return (
     <Link
       href={`/markets/${encodeURIComponent(market.symbol)}`}
+      prefetch={false}
       className="flex items-center gap-3 border-b border-border/60 px-1 py-3 transition-colors hover:bg-muted/30 md:hidden"
     >
       <TokenLogo src={market.logoUrl} symbol={market.baseAsset} />

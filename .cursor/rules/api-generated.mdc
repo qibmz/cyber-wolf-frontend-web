@@ -1,0 +1,13 @@
+---
+description: API clients are Orval-generated; never hand-edit endpoints
+globs: src/api/endpoints/**
+alwaysApply: false
+---
+
+# Generated API only
+
+Files under `src/api/endpoints/` are produced by `pnpm api:generate` (Orval).
+
+- Do **not** manually edit, add, or delete these files.
+- To refresh after backend OpenAPI changes: run `pnpm api:generate`, then update call sites only.
+- Cross-cutting axios/auth/error logic belongs outside this directory (e.g. `lib/auth.ts`).

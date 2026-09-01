@@ -6,10 +6,7 @@ import { useInfiniteQuery } from "@tanstack/react-query"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { Loader2, Search } from "lucide-react"
 
-import type {
-  InfinityPaginationMarketResponseDto,
-  Market,
-} from "@/api/endpoints/api.schemas"
+import type { Market } from "@/api/endpoints/api.schemas"
 import { marketsControllerFindAllV1 } from "@/api/endpoints/markets"
 import { PriceChange } from "@/components/markets/price-change"
 import { TokenLogo } from "@/components/markets/token-logo"
@@ -177,7 +174,7 @@ export function MarketsList() {
     error,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ["markets", query],
+    queryKey: ["markets", "list", query],
     queryFn: ({ pageParam }) =>
       marketsControllerFindAllV1({
         page: pageParam as number,

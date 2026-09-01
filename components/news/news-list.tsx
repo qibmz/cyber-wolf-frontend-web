@@ -26,22 +26,28 @@ export function NewsList() {
   })
   const categories = categoriesData?.data ?? []
 
-  const { data, fetchNextPage, hasNextPage, isLoading, isError, error } =
-    useInfiniteQuery({
-      queryKey: ["news", categoryId],
-      queryFn: ({ pageParam }) =>
-        newsArticlesControllerFindAllV1({
-          page: pageParam as number,
-          limit: PAGE_SIZE,
-          ...(categoryId ? { categoryId } : {}),
-        }),
-      initialPageParam: 1,
-      getNextPageParam: (lastPage, allPages) => {
-        const body = lastPage.data
-        return body.hasNextPage ? allPages.length + 1 : undefined
-      },
-    })
-
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ["news", categoryId],
+    queryFn: ({ pageParam }) =>
+      newsArticlesControllerFindAllV1({
+        page: pageParam as number,
+        limit: PAGE_SIZE,
+        ...(categoryId ? { categoryId } : {}),
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      const body = lastPage.data
+      return body.hasNextPage ? allPages.length + 1 : undefined
+    },
+  })
   const articles = useMemo(
     () => data?.pages.flatMap((page) => page.data.data) ?? [],
     [data]
@@ -93,12 +99,12 @@ export function NewsList() {
           <Loader2 className="mr-2 animate-spin" />
           加载中…
         </div>
-      ) : isError ? (
+      ) : isError && !data ? (
         <div className="flex flex-col items-center gap-3 py-24">
           <p className="text-sm text-destructive">
             {getApiErrorMessage(error)}
           </p>
-          <Button size="sm" onClick={() => window.location.reload()}>
+          <Button size="sm" onClick={() => refetch()}>
             重试
           </Button>
         </div>
@@ -129,6 +135,17 @@ export function NewsList() {
               <NewsCard key={article.id} article={article} />
             ))}
           </div>
+          {isError && data && (
+            <div className="flex justify-center py-6">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fetchNextPage()}
+              >
+                加载失败，点击重试
+              </Button>
+            </div>
+          )}
         </InfiniteScroll>
       )}
     </>

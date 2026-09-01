@@ -41,10 +41,22 @@ export function WalletLogin({
   const [flowError, setFlowError] = useState<string | null>(null)
   // 防止同一地址重复触发登录流程
   const handledRef = useRef<string | null>(null)
+  // 异步登录流程落地前的守卫：组件是否卸载、地址是否仍与发起时一致
+  const mountedRef = useRef(false)
+  const addressRef = useRef<string | undefined>(address)
+
+  // 地址变化时同步到 ref（供异步登录回调判断是否仍为同一地址）
+  useEffect(() => {
+    addressRef.current = address
+  }, [address])
 
   const login = useAuthWalletControllerLoginV1({
     mutation: {
       onSuccess: (response) => {
+        // 组件已卸载或地址已切换时丢弃本次结果，避免错误跳转 / 覆盖登录态
+        if (!mountedRef.current || handledRef.current !== addressRef.current) {
+          return
+        }
         saveAuthTokens(response.data)
         // 用户信息写入全局状态（不落地 localStorage）
         useAuthStore.getState().setUser(response.data.user)
@@ -64,11 +76,20 @@ export function WalletLogin({
       // 成功后的落地在 mutation.onSuccess 中处理
     } catch (err) {
       handledRef.current = null
-      setFlowError(toErrorMessage(err))
+      if (mountedRef.current) setFlowError(toErrorMessage(err))
     } finally {
-      setBusy(false)
+      if (mountedRef.current) setBusy(false)
     }
   }
+
+  useEffect(() => {
+    // StrictMode 会 mount → cleanup → remount；setup 里重置为 true，
+    // 避免 cleanup 把 mounted 标志卡在 false
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
 
   useEffect(() => {
     if (isConnected && address && handledRef.current !== address) {

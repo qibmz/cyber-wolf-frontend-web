@@ -4,7 +4,6 @@ import Link from "next/link"
 import { useQuery } from "@tanstack/react-query"
 import { ArrowLeft, Loader2 } from "lucide-react"
 
-import type { Market } from "@/api/endpoints/api.schemas"
 import { marketsControllerFindOneV1 } from "@/api/endpoints/markets"
 import { PriceChange } from "@/components/markets/price-change"
 import { TokenLogo } from "@/components/markets/token-logo"
@@ -26,7 +25,7 @@ function StatCell({ label, value }: { label: string; value: string }) {
 
 export function MarketDetail({ symbol }: { symbol: string }) {
   const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ["markets", symbol],
+    queryKey: ["markets", "detail", symbol],
     queryFn: () => marketsControllerFindOneV1(symbol),
   })
 

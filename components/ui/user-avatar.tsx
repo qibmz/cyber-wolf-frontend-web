@@ -1,16 +1,12 @@
 "use client"
 
-import type { User } from "@/api/endpoints/api.schemas"
+import type { FileType, User } from "@/api/endpoints/api.schemas"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { GeneratedAvatar } from "@/components/ui/generated-avatar"
 
-function getAvatarUrl(photo: unknown): string | undefined {
-  if (typeof photo === "string" && photo) return photo
-  if (photo && typeof photo === "object" && "url" in photo) {
-    const url = (photo as { url?: unknown }).url
-    if (typeof url === "string" && url) return url
-  }
-  return undefined
+function getAvatarUrl(photo: FileType | null | undefined): string | undefined {
+  // User.photo 是 FileType = { id, path }，没有 url 字段；取 path 作为图片地址
+  return photo?.path || undefined
 }
 
 /**

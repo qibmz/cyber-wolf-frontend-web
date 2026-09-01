@@ -40,11 +40,7 @@ export function NewsImage({ src, alt, className }: NewsImageProps) {
           alt={alt}
           loading="lazy"
           decoding="async"
-          onLoad={(e) => {
-            // complete 缓存图也会触发 onLoad；naturalWidth 为 0 视为失败
-            const img = e.currentTarget
-            setStatus(img.naturalWidth > 0 ? "loaded" : "error")
-          }}
+          onLoad={() => setStatus("loaded")}
           onError={() => setStatus("error")}
           className={cn(
             "h-full w-full object-cover transition-opacity duration-300",

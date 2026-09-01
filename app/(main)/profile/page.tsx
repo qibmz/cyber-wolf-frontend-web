@@ -284,12 +284,13 @@ function NicknameCard({ user }: { user: User }) {
 
 export default function ProfilePage() {
   const router = useRouter()
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isLoading } = useAuth()
   const logout = useAuthControllerLogoutV1()
 
   useEffect(() => {
-    if (!isAuthenticated) router.replace("/login")
-  }, [isAuthenticated, router])
+    // 等待用户信息恢复完成后再判断，避免刷新时误判未登录而跳转登录页
+    if (!isLoading && !isAuthenticated) router.replace("/login")
+  }, [isLoading, isAuthenticated, router])
 
   if (!user) {
     return (
@@ -303,11 +304,16 @@ export default function ProfilePage() {
   const displayName = user.nickname?.trim() || user.email || "用户"
 
   function handleLogout() {
-    logout.mutateAsync().finally(() => {
-      clearAuth()
-      useAuthStore.getState().clearUser()
-      router.replace("/")
-    })
+    logout
+      .mutateAsync()
+      .catch(() => {
+        // 服务端登出失败也强制本地登出，避免残留半登录态
+      })
+      .finally(() => {
+        clearAuth()
+        useAuthStore.getState().clearUser()
+        router.replace("/")
+      })
   }
 
   return (

@@ -31,9 +31,7 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname()
 
-  const displayName = user?.nickname?.trim()
-    ? user.nickname
-    : (user?.email ?? "")
+  const displayName = user?.nickname?.trim() || (user?.email ?? "")
 
   function isActive(href: string) {
     return pathname === href || pathname.startsWith(`${href}/`)

@@ -1,5 +1,7 @@
 import axios from "axios"
 
+import { useAuthStore } from "@/stores/auth-store"
+
 const TOKEN_KEY = "token"
 const REFRESH_TOKEN_KEY = "refreshToken"
 
@@ -50,7 +52,9 @@ if (typeof window !== "undefined") {
         body &&
         typeof body === "object" &&
         !(body instanceof Blob) &&
-        body.code === 200 &&
+        typeof body.code === "number" &&
+        body.code >= 200 &&
+        body.code < 300 &&
         "data" in body
       ) {
         response.data = body.data
@@ -61,6 +65,8 @@ if (typeof window !== "undefined") {
       // 401：静默清除登录态，不跳转（避免进入页面就被踢到登录页）
       if (error.response?.status === 401) {
         clearAuth()
+        // 同步清空内存中的 user，避免 UI 仍认为已登录（与 token 保持一致）
+        useAuthStore.getState().clearUser()
       }
       return Promise.reject(error)
     }

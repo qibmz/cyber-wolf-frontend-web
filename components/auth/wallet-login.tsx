@@ -41,44 +41,47 @@ export function WalletLogin({
   const [flowError, setFlowError] = useState<string | null>(null)
   // 防止同一地址重复触发登录流程
   const handledRef = useRef<string | null>(null)
-  // 异步登录流程落地前的守卫：组件是否卸载、地址是否仍与发起时一致
+  // 当前应驱动 busy / 错误态的登录地址；旧请求 finally 不得清掉新流程的 UI
+  const activeLoginAddrRef = useRef<string | null>(null)
   const mountedRef = useRef(false)
   const addressRef = useRef<string | undefined>(address)
 
-  // 地址变化时同步到 ref（供异步登录回调判断是否仍为同一地址）
+  // 地址变化时同步到 ref（供异步登录用局部 addr 与「当前连接地址」比对）
   useEffect(() => {
     addressRef.current = address
   }, [address])
 
-  const login = useAuthWalletControllerLoginV1({
-    mutation: {
-      onSuccess: (response) => {
-        // 组件已卸载或地址已切换时丢弃本次结果，避免错误跳转 / 覆盖登录态
-        if (!mountedRef.current || handledRef.current !== addressRef.current) {
-          return
-        }
-        saveAuthTokens(response.data)
-        // 用户信息写入全局状态（不落地 localStorage）
-        useAuthStore.getState().setUser(response.data.user)
-        router.push("/")
-      },
-    },
-  })
+  const login = useAuthWalletControllerLoginV1()
+
+  // 本次异步流程是否仍应对当前连接生效（未卸载，且连接地址仍是发起时的 addr）
+  function isStale(addr: string) {
+    return !mountedRef.current || addressRef.current !== addr
+  }
 
   async function runLogin(addr: string) {
+    activeLoginAddrRef.current = addr
     setFlowError(null)
     setBusy(true)
     try {
       // 获取 nonce -> 组装并签名 SIWE 消息
       const payload = await siweAuth(addr)
-      // 提交登录
-      await login.mutateAsync({ data: payload })
-      // 成功后的落地在 mutation.onSuccess 中处理
+      if (isStale(addr)) return
+      // 提交登录；用发起时的 addr（局部变量）校验，避免 handledRef 被新地址覆盖后误放行旧结果
+      const response = await login.mutateAsync({ data: payload })
+      if (isStale(addr)) return
+      saveAuthTokens(response.data)
+      // 用户信息写入全局状态（不落地 localStorage）
+      useAuthStore.getState().setUser(response.data.user)
+      router.push("/")
     } catch (err) {
-      handledRef.current = null
-      if (mountedRef.current) setFlowError(toErrorMessage(err))
+      // 仅清掉本地址的 handled 标记；若已切到新地址，不要干扰新流程
+      if (handledRef.current === addr) handledRef.current = null
+      if (!isStale(addr)) setFlowError(toErrorMessage(err))
     } finally {
-      if (mountedRef.current) setBusy(false)
+      // 只有仍是「当前活跃」登录才清 busy，避免旧请求 finally 关掉新流程的 loading
+      if (mountedRef.current && activeLoginAddrRef.current === addr) {
+        setBusy(false)
+      }
     }
   }
 
@@ -92,12 +95,21 @@ export function WalletLogin({
   }, [])
 
   useEffect(() => {
-    if (isConnected && address && handledRef.current !== address) {
+    if (!isConnected) {
+      // 断开后允许再次用同一地址登录；busy 用下方派生值释放，避免在 effect 里 setState
+      handledRef.current = null
+      activeLoginAddrRef.current = null
+      return
+    }
+    if (address && handledRef.current !== address) {
       handledRef.current = address
       runLogin(address)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected, address])
+
+  // 断开连接后不展示 loading，避免旧请求留下的 busy 卡住「连接」按钮
+  const showBusy = busy && isConnected
 
   return (
     <div className={cn("flex flex-col gap-3", className)} {...props}>
@@ -107,17 +119,17 @@ export function WalletLogin({
             type="button"
             variant="secondary"
             className="w-full"
-            disabled={busy}
+            disabled={showBusy}
             onClick={() => open({ view: "Account" })}
           >
-            {busy ? <Loader2 className="animate-spin" /> : <Wallet />}
+            {showBusy ? <Loader2 className="animate-spin" /> : <Wallet />}
             {shortAddress(address)}
           </Button>
           <Button
             type="button"
             variant="ghost"
             className="w-full"
-            disabled={busy}
+            disabled={showBusy}
             onClick={() => disconnect()}
           >
             断开钱包
@@ -128,10 +140,10 @@ export function WalletLogin({
           type="button"
           variant="outline"
           className="w-full"
-          disabled={busy}
+          disabled={showBusy}
           onClick={() => open({ view: "Connect" })}
         >
-          {busy ? <Loader2 className="animate-spin" /> : <Wallet />}
+          {showBusy ? <Loader2 className="animate-spin" /> : <Wallet />}
           使用钱包登录
         </Button>
       )}

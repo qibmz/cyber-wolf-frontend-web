@@ -52,7 +52,9 @@ if (typeof window !== "undefined") {
         body &&
         typeof body === "object" &&
         !(body instanceof Blob) &&
-        body.code === 200 &&
+        typeof body.code === "number" &&
+        body.code >= 200 &&
+        body.code < 300 &&
         "data" in body
       ) {
         response.data = body.data

@@ -1,10 +1,9 @@
 "use client"
 
 import Link from "next/link"
-import { useQuery } from "@tanstack/react-query"
 import { ArrowLeft, ExternalLink, Loader2 } from "lucide-react"
 
-import { newsArticlesControllerFindByIdV1 } from "@/api/endpoints/news"
+import { useNewsArticlesControllerFindByIdV1 } from "@/api/endpoints/news"
 import { DocumentTitle } from "@/components/page-title"
 import { ImagePreview } from "@/components/news/image-preview"
 import { Button } from "@/components/ui/button"
@@ -23,19 +22,15 @@ function formatDate(dateStr: string) {
 }
 
 /**
- * 资讯详情：走客户端 `/api/v1`（Next rewrite 代理），
- * 与列表页同一路径，避免 SSR 直连 BACKEND_URL 在部署环境失败后误触发 notFound。
+ * 资讯详情：Orval hook；SSR 已 prefetch 时无 loading，可自动利用 React Query 缓存。
  */
 export function NewsDetail({ id }: { id: string }) {
-  const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ["news", "detail", id],
-    queryFn: () => newsArticlesControllerFindByIdV1(id),
-    enabled: !!id,
-  })
+  const { data, isPending, isError, error, refetch, isFetching } =
+    useNewsArticlesControllerFindByIdV1(id)
 
   const article = data?.data ?? null
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="flex items-center justify-center py-24 text-muted-foreground">
         <Loader2 className="mr-2 animate-spin" />
@@ -48,7 +43,7 @@ export function NewsDetail({ id }: { id: string }) {
     return (
       <div className="flex flex-col items-center gap-3 py-24">
         <p className="text-sm text-destructive">{getApiErrorMessage(error)}</p>
-        <Button size="sm" onClick={() => refetch()}>
+        <Button size="sm" onClick={() => refetch()} disabled={isFetching}>
           重试
         </Button>
       </div>

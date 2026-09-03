@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   experimental: {
     viewTransition: true,
   },
-  // 构建时写入服务端包，避免 Vercel 运行时未配置 BACKEND_URL 时回落到 localhost
+  // 构建期注入，供服务端 fetch / rewrite 使用同一 BACKEND_URL
   env: {
     BACKEND_URL,
   },

@@ -28,12 +28,23 @@ export function clearAuth() {
   localStorage.removeItem(REFRESH_TOKEN_KEY)
 }
 
-// 全局 axios 拦截器（客户端注册一次）：
-// 1. 所有请求自动附带 Bearer token
-// 2. 请求头声明语言（后端 nestjs-i18n 按此返回对应语言，简体中文 = zh）
-// 3. 统一解包后端响应包装 { code, msg, data }，业务侧拿到原始 data
-// 4. 401 时静默清除登录态（不强制跳转，由 UI 呈现未登录状态）
-if (typeof window !== "undefined") {
+/**
+ * Axios 横切（客户端 + 服务端）：
+ * - 服务端：baseURL = BACKEND_URL，供 Orval 相对路径 `/api/v1/...` 在 SSR 可用
+ * - 客户端：不设 baseURL，走 Next rewrite 同源代理
+ * - 语言头、成功体解包两端一致；Bearer / 401 清登录态仅客户端
+ */
+if (typeof window === "undefined") {
+  axios.defaults.baseURL = process.env.BACKEND_URL ?? "http://localhost:3001"
+}
+
+const axiosSetup = globalThis as typeof globalThis & {
+  __cwAxiosInterceptorsInstalled?: boolean
+}
+
+if (!axiosSetup.__cwAxiosInterceptorsInstalled) {
+  axiosSetup.__cwAxiosInterceptorsInstalled = true
+
   axios.interceptors.request.use((config) => {
     config.headers["x-custom-lang"] = "zh"
     const token = getToken()
@@ -62,10 +73,9 @@ if (typeof window !== "undefined") {
       return response
     },
     (error) => {
-      // 401：静默清除登录态，不跳转（避免进入页面就被踢到登录页）
-      if (error.response?.status === 401) {
+      // 401：仅浏览器侧静默清除登录态
+      if (typeof window !== "undefined" && error.response?.status === 401) {
         clearAuth()
-        // 同步清空内存中的 user，避免 UI 仍认为已登录（与 token 保持一致）
         useAuthStore.getState().clearUser()
       }
       return Promise.reject(error)

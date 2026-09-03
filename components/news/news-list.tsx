@@ -9,7 +9,7 @@ import {
   newsArticlesControllerFindAllV1,
   newsArticlesControllerFindCategoriesV1,
 } from "@/api/endpoints/news"
-import { scrollToTop } from "@/components/lenis-provider"
+import { scrollToTop } from "@/lib/scroll"
 import { NewsCard } from "@/components/news/news-card"
 import { Button } from "@/components/ui/button"
 import { getApiErrorMessage } from "@/lib/api-errors"

@@ -6,6 +6,10 @@ const nextConfig: NextConfig = {
   experimental: {
     viewTransition: true,
   },
+  // 构建期注入，供服务端 fetch / rewrite 使用同一 BACKEND_URL
+  env: {
+    BACKEND_URL,
+  },
   async rewrites() {
     return [
       {

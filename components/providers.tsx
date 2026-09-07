@@ -1,13 +1,14 @@
 "use client"
 
 import { useState, type ReactNode } from "react"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { QueryClientProvider } from "@tanstack/react-query"
 import { WagmiProvider, cookieToInitialState, type Config } from "wagmi"
 import { createAppKit } from "@reown/appkit/react"
 import { mainnet } from "@reown/appkit/networks"
 
 import { networks, projectId, wagmiAdapter } from "@/config"
 import "@/lib/auth"
+import { getBrowserQueryClient } from "@/lib/query-client"
 
 // 应用元数据（用于 WalletConnect / Verify API 展示）
 // url 的 origin 必须与部署域名及子域名保持一致
@@ -44,7 +45,7 @@ export function Providers({
   children: ReactNode
   cookies: string | null
 }) {
-  const [queryClient] = useState(() => new QueryClient())
+  const [queryClient] = useState(() => getBrowserQueryClient())
   const initialState = cookieToInitialState(
     wagmiAdapter.wagmiConfig as Config,
     cookies

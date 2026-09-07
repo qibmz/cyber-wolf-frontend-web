@@ -1,13 +1,8 @@
 "use client"
 
-import { useRef, useState } from "react"
-import { useGSAP } from "@gsap/react"
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { useEffect, useRef, useState, useSyncExternalStore } from "react"
 
 import { TextScramble } from "@/components/home/text-scramble"
-
-gsap.registerPlugin(ScrollTrigger)
 
 const STATS = [
   { value: 120, suffix: "+", label: "支持的数字资产", decimals: 0 },
@@ -23,25 +18,49 @@ function formatValue(value: number, decimals: number) {
   })
 }
 
+function subscribeReducedMotion(onChange: () => void) {
+  const mq = window.matchMedia("(prefers-reduced-motion: reduce)")
+  mq.addEventListener("change", onChange)
+  return () => mq.removeEventListener("change", onChange)
+}
+
+function getReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches
+}
+
+function usePrefersReducedMotion() {
+  return useSyncExternalStore(
+    subscribeReducedMotion,
+    getReducedMotion,
+    () => false
+  )
+}
+
 function StatCard({ stat }: { stat: (typeof STATS)[number] }) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [started, setStarted] = useState(false)
+  const reducedMotion = usePrefersReducedMotion()
 
-  // 滚动进入视口后开始乱码解码
-  useGSAP(
-    () => {
-      if (!cardRef.current) return
-      ScrollTrigger.create({
-        trigger: cardRef.current,
-        start: "top 85%",
-        once: true,
-        onEnter: () => {
-          setTimeout(() => setStarted(true), 0)
-        },
-      })
-    },
-    { scope: cardRef }
-  )
+  useEffect(() => {
+    if (reducedMotion) return
+
+    const el = cardRef.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return
+        setStarted(true)
+        observer.disconnect()
+      },
+      { threshold: 0.2, rootMargin: "0px 0px -15% 0px" }
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [reducedMotion])
+
+  const display = formatValue(stat.value, stat.decimals)
 
   return (
     <div
@@ -49,9 +68,13 @@ function StatCard({ stat }: { stat: (typeof STATS)[number] }) {
       className="flex min-w-0 flex-col items-center gap-1.5 rounded-2xl bg-card/50 p-4 text-center backdrop-blur-sm sm:p-6"
     >
       <div className="flex h-8 items-baseline justify-center gap-0.5 sm:h-12">
-        {started ? (
+        {reducedMotion ? (
+          <span className="font-mono text-xl font-bold tracking-tight text-primary tabular-nums sm:text-4xl">
+            {display}
+          </span>
+        ) : started ? (
           <TextScramble
-            value={formatValue(stat.value, stat.decimals)}
+            value={display}
             duration={900}
             className="font-mono text-xl font-bold tracking-tight text-primary tabular-nums sm:text-4xl"
           />
@@ -72,8 +95,7 @@ function StatCard({ stat }: { stat: (typeof STATS)[number] }) {
 }
 
 /**
- * 数据统计区块（赛博朋克黑客风）：
- * 滚动进入 → 乱码闪烁解码为最终数字。
+ * 数据统计区块：滚动进入视口后乱码解码为最终数字（无 GSAP）。
  */
 export function StatsSection() {
   return (

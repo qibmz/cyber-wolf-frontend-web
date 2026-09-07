@@ -1,10 +1,9 @@
 "use client"
 
 import Link from "next/link"
-import { useQuery } from "@tanstack/react-query"
 import { ArrowLeft, Loader2 } from "lucide-react"
 
-import { marketsControllerFindOneV1 } from "@/api/endpoints/markets"
+import { useMarketsControllerFindOneV1 } from "@/api/endpoints/markets"
 import { PriceChange } from "@/components/markets/price-change"
 import { TokenLogo } from "@/components/markets/token-logo"
 import { Button } from "@/components/ui/button"
@@ -23,15 +22,16 @@ function StatCell({ label, value }: { label: string; value: string }) {
   )
 }
 
+/**
+ * 行情详情：Orval hook；SSR 已 prefetch 时无 loading，可自动利用 React Query 缓存。
+ */
 export function MarketDetail({ symbol }: { symbol: string }) {
-  const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ["markets", "detail", symbol],
-    queryFn: () => marketsControllerFindOneV1(symbol),
-  })
+  const { data, isPending, isError, error, refetch, isFetching } =
+    useMarketsControllerFindOneV1(symbol)
 
   const market = data?.data ?? null
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="flex items-center justify-center py-24 text-muted-foreground">
         <Loader2 className="mr-2 animate-spin" />
@@ -44,7 +44,7 @@ export function MarketDetail({ symbol }: { symbol: string }) {
     return (
       <div className="flex flex-col items-center gap-3 py-24">
         <p className="text-sm text-destructive">{getApiErrorMessage(error)}</p>
-        <Button size="sm" onClick={() => refetch()}>
+        <Button size="sm" onClick={() => refetch()} disabled={isFetching}>
           重试
         </Button>
       </div>

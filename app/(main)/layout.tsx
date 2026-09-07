@@ -3,7 +3,6 @@ import { ViewTransition } from "react"
 import { Footer } from "@/components/layout/footer"
 import { Navbar } from "@/components/layout/navbar"
 import { ScrollToTop } from "@/components/layout/scroll-to-top"
-import { LenisProvider } from "@/components/lenis-provider"
 
 /**
  * 主站布局（route group: (main)）：
@@ -17,17 +16,15 @@ export default function MainLayout({
   children: React.ReactNode
 }>) {
   return (
-    <LenisProvider>
-      <div className="flex min-h-svh flex-col">
-        <Navbar />
-        <main className="flex flex-1 flex-col">
-          <ViewTransition enter="page-enter" exit="page-exit" default="none">
-            {children}
-          </ViewTransition>
-        </main>
-        <Footer />
-        <ScrollToTop />
-      </div>
-    </LenisProvider>
+    <div className="flex min-h-svh flex-col">
+      <Navbar />
+      <main className="flex flex-1 flex-col">
+        <ViewTransition enter="page-enter" exit="page-exit" default="none">
+          {children}
+        </ViewTransition>
+      </main>
+      <Footer />
+      <ScrollToTop />
+    </div>
   )
 }

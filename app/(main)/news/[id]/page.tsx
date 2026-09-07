@@ -5,13 +5,25 @@ import { isAxiosError } from "axios"
 
 import {
   getNewsArticlesControllerFindByIdV1QueryKey,
-  getNewsArticlesControllerFindByIdV1QueryOptions,
+  newsArticlesControllerFindByIdV1,
 } from "@/api/endpoints/news"
 import type { NewsArticle } from "@/api/endpoints/api.schemas"
 import { NewsDetail } from "@/components/news/news-detail"
 import "@/lib/auth"
+import {
+  type DehydratedAxiosData,
+  toDehydratedAxiosData,
+} from "@/lib/dehydrate-axios"
 import { getServerQueryClient } from "@/lib/query-client"
-import type { AxiosResponse } from "axios"
+
+async function prefetchNewsArticle(id: string) {
+  const queryClient = getServerQueryClient()
+  return queryClient.fetchQuery({
+    queryKey: getNewsArticlesControllerFindByIdV1QueryKey(id),
+    queryFn: async () =>
+      toDehydratedAxiosData(await newsArticlesControllerFindByIdV1(id)),
+  })
+}
 
 export async function generateMetadata({
   params,
@@ -19,12 +31,9 @@ export async function generateMetadata({
   params: Promise<{ id: string }>
 }): Promise<Metadata> {
   const { id } = await params
-  const queryClient = getServerQueryClient()
 
   try {
-    const response = await queryClient.fetchQuery(
-      getNewsArticlesControllerFindByIdV1QueryOptions(id)
-    )
+    const response = await prefetchNewsArticle(id)
     const article = response.data
     if (!article) return { title: "资讯不存在" }
 
@@ -56,9 +65,7 @@ export default async function NewsDetailPage({
   const queryClient = getServerQueryClient()
 
   try {
-    await queryClient.fetchQuery(
-      getNewsArticlesControllerFindByIdV1QueryOptions(id)
-    )
+    await prefetchNewsArticle(id)
   } catch (err) {
     if (isAxiosError(err) && err.response?.status === 404) {
       notFound()
@@ -66,9 +73,9 @@ export default async function NewsDetailPage({
     // 非 404：仍脱水给客户端，由 hook 展示错误 / 重试
   }
 
-  const cached = queryClient.getQueryData<AxiosResponse<NewsArticle | null>>(
-    getNewsArticlesControllerFindByIdV1QueryKey(id)
-  )
+  const cached = queryClient.getQueryData<
+    DehydratedAxiosData<NewsArticle | null>
+  >(getNewsArticlesControllerFindByIdV1QueryKey(id))
   if (cached && cached.data == null) {
     notFound()
   }
